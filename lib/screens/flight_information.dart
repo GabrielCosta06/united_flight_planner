@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'flight_list_screen.dart';
+
+import '../core/app_theme.dart';
 import '../data/flight_data.dart';
 import '../widgets/background.dart';
-
-const Color unitedBlue = Color.fromARGB(255, 0, 77, 155);
+import 'flight_list_screen.dart';
 
 class FlightInformationScreen extends StatefulWidget {
   final String origin;
@@ -145,7 +145,7 @@ class _FlightInformationScreenState extends State<FlightInformationScreen>
 
   void _continueToFlightList() {
     // Use the original flight type from widget.flightType.
-    print('Navigating with flight type: ${widget.flightType}');
+    debugPrint('Navigating with flight type: ${widget.flightType}');
     if (_formKey.currentState!.validate() && _departureDate != null) {
       Navigator.push(
         context,
@@ -373,7 +373,7 @@ class _FlightInformationScreenState extends State<FlightInformationScreen>
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: unitedBlue,
+                backgroundColor: AppColors.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -395,7 +395,7 @@ class _FlightInformationScreenState extends State<FlightInformationScreen>
                   ..._employeeNotes.reversed.map((note) {
                     DateTime noteDate = DateTime.parse(note['date']);
                     return ListTile(
-                      leading: const Icon(Icons.note, color: unitedBlue),
+                      leading: const Icon(Icons.note, color: AppColors.primary),
                       title: Text(note['note'], style: GoogleFonts.inter()),
                       subtitle: Text(
                         'By ${note['employee']} - ${DateFormat('MMM dd, yyyy, hh:mm a').format(noteDate)} (${airportCodes[note['airport']] ?? note['airport']})',
@@ -526,7 +526,7 @@ class _FlightInformationScreenState extends State<FlightInformationScreen>
                           color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: unitedBlue,
+                      backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(
                           vertical: 18, horizontal: 24),
                       shape: RoundedRectangleBorder(
@@ -549,7 +549,6 @@ class _FlightInfoAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String destination;
   final Animation<double> planeAnimation;
   const _FlightInfoAppBar({
-    super.key,
     required this.origin,
     required this.destination,
     required this.planeAnimation,
@@ -561,17 +560,13 @@ class _FlightInfoAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       automaticallyImplyLeading: false,
       titleSpacing: 0,
-      backgroundColor: unitedBlue,
+      backgroundColor: AppColors.primary,
       flexibleSpace: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          gradient: AppGradients.primary,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               spreadRadius: 2,
               blurRadius: 3,
               offset: Offset(0, 4),

@@ -6,8 +6,8 @@ import '../models/flight.dart';
 import '../widgets/priority_table.dart';
 import '../widgets/seat_map.dart';
 import 'select_travel_details_screen.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class FlightDetailScreen extends StatefulWidget {
   final Flight flight;
@@ -20,7 +20,7 @@ class FlightDetailScreen extends StatefulWidget {
   });
 
   @override
-  _FlightDetailScreenState createState() => _FlightDetailScreenState();
+  State<FlightDetailScreen> createState() => _FlightDetailScreenState();
 }
 
 class _FlightDetailScreenState extends State<FlightDetailScreen> {
@@ -75,7 +75,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
             style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: highlight ? unitedBlue : Colors.black,
+              color: highlight ? AppColors.primary : Colors.black,
             ),
           ),
           const SizedBox(height: 2),
@@ -254,7 +254,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         elevation: 4,
         toolbarHeight: 50,
         centerTitle: false,
@@ -289,14 +289,10 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 spreadRadius: 2,
                 blurRadius: 3,
                 offset: const Offset(0, 4),
@@ -331,7 +327,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
                         _buildStatItem('Available', stats['available']!,
                             Icons.event_available, Colors.orange),
                         _buildStatItem('Standbys', stats['nonRevs']!,
-                            Icons.person_outline, unitedBlue,
+                            Icons.person_outline, AppColors.primary,
                             highlight: true),
                       ],
                     ),
@@ -353,9 +349,9 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
                         labelStyle:
                             GoogleFonts.inter(fontWeight: FontWeight.bold),
                         unselectedLabelStyle: GoogleFonts.inter(),
-                        labelColor: unitedBlue,
+                        labelColor: AppColors.primary,
                         unselectedLabelColor: Colors.black,
-                        indicatorColor: unitedBlue,
+                        indicatorColor: AppColors.primary,
                         tabs: const [
                           Tab(text: 'Cabin seat'),
                           Tab(text: 'Flight deck jumpseat'),
@@ -444,7 +440,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
                             horizontal: 32, vertical: 14),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24)),
-                        backgroundColor: unitedBlue,
+                        backgroundColor: AppColors.primary,
                       ),
                       onPressed: () {
                         // Navigate to SelectTravelDetailsScreen to let the user choose additional details.

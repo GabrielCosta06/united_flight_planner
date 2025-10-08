@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../models/flight.dart';
 
 /// A booking service to manage seat assignments on flights.
@@ -11,7 +13,7 @@ class BookingService {
   /// Returns true if booking succeeds, false otherwise.
   bool bookSeat(Flight flight, String seatClass, String passengerId) {
     if (!flight.seats.containsKey(seatClass)) {
-      print('Invalid seat class: $seatClass');
+      debugPrint('Invalid seat class: $seatClass');
       return false;
     }
     // Ensure the list exists for this seat class.
@@ -20,12 +22,12 @@ class BookingService {
 
     int capacity = flight.seats[seatClass]!;
     if (confirmed.length >= capacity) {
-      print('No available seats in $seatClass.');
+      debugPrint('No available seats in $seatClass.');
       return false;
     }
 
     confirmed.add(passengerId);
-    print(
+    debugPrint(
         'Seat booked for passenger $passengerId in $seatClass on flight ${flight.flightNumber}.');
     return true;
   }
@@ -35,7 +37,7 @@ class BookingService {
   /// Returns true if unbooking succeeds, false if the passenger was not found.
   bool unbookSeat(Flight flight, String seatClass, String passengerId) {
     if (!flight.seats.containsKey(seatClass)) {
-      print('Invalid seat class: $seatClass');
+      debugPrint('Invalid seat class: $seatClass');
       return false;
     }
     // Ensure the list exists for this seat class.
@@ -43,12 +45,12 @@ class BookingService {
     List<String> confirmed = flight.confirmedPassengers[seatClass]!;
 
     if (!confirmed.contains(passengerId)) {
-      print('Passenger $passengerId not found in $seatClass bookings.');
+      debugPrint('Passenger $passengerId not found in $seatClass bookings.');
       return false;
     }
 
     confirmed.remove(passengerId);
-    print(
+    debugPrint(
         'Seat unbooked for passenger $passengerId in $seatClass on flight ${flight.flightNumber}.');
     return true;
   }

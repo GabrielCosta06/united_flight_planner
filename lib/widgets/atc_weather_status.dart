@@ -72,6 +72,7 @@ class USAStatusMap extends StatelessWidget {
 
     try {
       final response = await http.get(Uri.parse(url));
+      if (!context.mounted) return;
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final current = data['current_weather'];
@@ -392,7 +393,7 @@ class USAStatusMap extends StatelessWidget {
                                     Shadow(
                                       offset: const Offset(2, 2),
                                       blurRadius: 1,
-                                      color: Colors.black.withOpacity(0.5),
+                                      color: Colors.black.withValues(alpha: 0.5),
                                     ),
                                   ],
                                 ),

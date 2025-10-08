@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'main_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'auth_service.dart';
-import '../widgets/background.dart';
 
-/// United Airlines Blue
-const Color unitedBlue = Color.fromARGB(255, 0, 77, 155);
-const Color unitedDarkBlue = Color.fromARGB(255, 23, 0, 65);
+import '../core/app_theme.dart';
+import '../widgets/background.dart';
+import 'auth_service.dart';
+import 'main_page.dart';
 
 class LoginScreen extends StatefulWidget {
+  static const String routeName = '/login';
+
   const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -28,6 +28,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -40,13 +47,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Simulate network delay.
     await Future.delayed(const Duration(seconds: 1));
+    if (!mounted) return;
 
-    if (await _authService.login(username, password)) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MainPage(currentEmployeeId: username),
-        ),
+    final isAuthenticated = await _authService.login(username, password);
+    if (!mounted) return;
+
+    if (isAuthenticated) {
+      Navigator.of(context).pushReplacementNamed(
+        MainPage.routeName,
+        arguments: MainPageArguments(username),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -60,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
 
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
@@ -73,7 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         leadingWidth: 0,
-        backgroundColor: unitedBlue,
         elevation: 4,
         toolbarHeight: 50,
         centerTitle: false,
@@ -105,14 +114,10 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3), // Shadow color
+                color: Colors.black.withValues(alpha: 0.3), // Shadow color
                 spreadRadius: 2,
                 blurRadius: 3,
                 offset: const Offset(0, 4), // Moves shadow down
@@ -135,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   elevation: 10,
                   margin: const EdgeInsets.symmetric(horizontal: 24),
-                  color: Colors.white.withOpacity(0.95),
+                  color: Colors.white.withValues(alpha: 0.95),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Form(
@@ -147,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             'Sign in to proceed',
                             style: GoogleFonts.inter(
                               textStyle: const TextStyle(
-                                color: unitedBlue,
+                                color: AppColors.primary,
                                 fontSize: 26,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -196,14 +201,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: _isLoading ? null : _login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: unitedBlue,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                              ),
                               child: Text(
                                 'Login',
                                 style: GoogleFonts.inter(
@@ -221,7 +218,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               'Forgot Password?',
                               style: GoogleFonts.inter(
-                                textStyle: const TextStyle(color: unitedBlue),
+                                textStyle:
+                                    const TextStyle(color: AppColors.primary),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -238,12 +236,9 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 width: double.infinity,
                 height: double.infinity,
-                color: Colors.black.withOpacity(0.2),
-                child: Center(
-                  child: Image.asset(
-                    'assets/images/loading.gif',
-                    height: 600, // Adjust the size as needed
-                  ),
+                color: Colors.black.withValues(alpha: 0.2),
+                child: const Center(
+                  child: CircularProgressIndicator(),
                 ),
               ),
           ],

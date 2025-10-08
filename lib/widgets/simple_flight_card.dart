@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/flight.dart';
 import '../data/flight_data.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color.fromARGB(255, 0, 77, 155);
 
 List<String> getCabinClasses(Flight flight) {
   if (flight.aircraft.contains("777-200")) {
@@ -29,7 +29,7 @@ class SimpleFlightCard extends StatefulWidget {
   });
 
   @override
-  _SimpleFlightCardState createState() => _SimpleFlightCardState();
+  State<SimpleFlightCard> createState() => _SimpleFlightCardState();
 }
 
 class _SimpleFlightCardState extends State<SimpleFlightCard> {
@@ -125,7 +125,7 @@ class _SimpleFlightCardState extends State<SimpleFlightCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
           side: BorderSide(
-            color: _isSelected ? unitedBlue : Colors.grey.shade300,
+            color: _isSelected ? AppColors.primary : Colors.grey.shade300,
             width: _isSelected ? 2.0 : 1.0,
           ),
         ),
@@ -165,7 +165,7 @@ class _SimpleFlightCardState extends State<SimpleFlightCard> {
                   Column(
                     children: [
                       const Icon(Icons.flight_takeoff,
-                          color: unitedBlue, size: 24),
+                          color: AppColors.primary, size: 24),
                       const SizedBox(height: 4),
                       Text(
                         flightNumber,
@@ -217,8 +217,8 @@ class _SimpleFlightCardState extends State<SimpleFlightCard> {
                 children: [
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: unitedBlue,
-                      side: BorderSide(color: unitedBlue),
+                      foregroundColor: AppColors.primary,
+                      side: BorderSide(color: AppColors.primary),
                     ),
                     onPressed: widget.onDetailsPressed ?? () {},
                     child: Text('Details', style: GoogleFonts.inter()),
@@ -226,7 +226,7 @@ class _SimpleFlightCardState extends State<SimpleFlightCard> {
                   const SizedBox(width: 8),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: unitedBlue,
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                     ),
                     onPressed: () {

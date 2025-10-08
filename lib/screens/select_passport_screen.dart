@@ -16,7 +16,7 @@ class SelectPassportScreen extends StatefulWidget {
   });
 
   @override
-  _SelectPassportScreenState createState() => _SelectPassportScreenState();
+  State<SelectPassportScreen> createState() => _SelectPassportScreenState();
 }
 
 class _SelectPassportScreenState extends State<SelectPassportScreen> {

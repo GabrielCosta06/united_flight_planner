@@ -6,7 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
   // Loads the employee data when an instance is created.
   AuthService() {
-    loadEmployeeData();
+    if (employees.isEmpty) {
+      loadEmployeeData();
+    }
   }
 
   // Key used to store the logged-in employee username.

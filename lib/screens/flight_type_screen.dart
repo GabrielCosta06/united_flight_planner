@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../core/app_theme.dart';
 import '../widgets/background.dart';
 import 'destination_screen.dart';
 import '../data/flight_data.dart';
@@ -19,21 +21,17 @@ class FlightTypeScreen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        backgroundColor: const Color.fromARGB(255, 23, 0, 65),
+        backgroundColor: AppColors.primaryDark,
         elevation: 0,
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3), // Shadow color
+                color: Colors.black.withValues(alpha: 0.3), // Shadow color
                 spreadRadius: 2,
                 blurRadius: 3,
                 offset: const Offset(0, 4), // Moves shadow down
@@ -81,7 +79,7 @@ class FlightTypeScreen extends StatelessWidget {
                   child: Material(
                     color: Colors.transparent,
                     child: Card(
-                      color: unitedBlue,
+                        color: AppColors.primary,
                       child: ListTile(
                         title: Text(
                           type,

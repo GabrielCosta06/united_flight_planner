@@ -3,18 +3,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../models/flight.dart';
-import '../data/flight_data.dart' as flightData;
+import '../data/flight_data.dart' as flight_data;
 import 'origin_screen.dart';
 import 'flight_detail_screen.dart'; // Ensure FlightDetailScreen is imported
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class TripsScreen extends StatefulWidget {
   final String currentEmployeeId;
   const TripsScreen({super.key, required this.currentEmployeeId});
 
   @override
-  _TripsScreenState createState() => _TripsScreenState();
+  State<TripsScreen> createState() => _TripsScreenState();
 }
 
 class _TripsScreenState extends State<TripsScreen>
@@ -40,7 +40,7 @@ class _TripsScreenState extends State<TripsScreen>
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         leadingWidth: 0,
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         elevation: 4,
         toolbarHeight: 50,
         centerTitle: false,
@@ -70,14 +70,10 @@ class _TripsScreenState extends State<TripsScreen>
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3), // Shadow color
+                color: Colors.black.withValues(alpha: 0.3), // Shadow color
                 spreadRadius: 2,
                 blurRadius: 3,
                 offset: const Offset(0, 4), // Moves shadow down
@@ -90,8 +86,8 @@ class _TripsScreenState extends State<TripsScreen>
         children: [
           TabBar(
             controller: _tabController,
-            indicatorColor: unitedBlue,
-            labelColor: unitedBlue,
+            indicatorColor: AppColors.primary,
+            labelColor: AppColors.primary,
             unselectedLabelColor: Colors.grey,
             tabs: const [
               Tab(text: 'Upcoming'),
@@ -114,7 +110,7 @@ class _TripsScreenState extends State<TripsScreen>
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         onPressed: () {
           Navigator.push(
             context,
@@ -145,7 +141,7 @@ class TripList extends StatefulWidget {
       {super.key, required this.tripType, required this.currentEmployeeId});
 
   @override
-  _TripListState createState() => _TripListState();
+  State<TripList> createState() => _TripListState();
 }
 
 class _TripListState extends State<TripList> {
@@ -165,7 +161,7 @@ class _TripListState extends State<TripList> {
 
     // Load all flights from your fake data.
     List<Flight> allFlights =
-        flightData.fakeFlights.values.expand((list) => list).toList();
+        flight_data.fakeFlights.values.expand((list) => list).toList();
 
     // Filter flights that the current employee booked.
     List<Flight> bookedFlights = allFlights.where((flight) {
@@ -288,7 +284,7 @@ class TripCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              Icon(Icons.flight, color: unitedBlue),
+              Icon(Icons.flight, color: AppColors.primary),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

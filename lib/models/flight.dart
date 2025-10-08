@@ -93,6 +93,10 @@ class Flight {
         'arrivalTime': arrivalTime.toIso8601String(),
         'origin': origin,
         'destination': destination,
+        'originAirportCode': originAirportCode,
+        'destinationAirportCode': destinationAirportCode,
+        'originCity': originCity,
+        'destinationCity': destinationCity,
         'availableSeats': availableSeats,
         'standbyCount': standbyCount,
         'stops': stops,
@@ -107,12 +111,16 @@ class Flight {
     return Flight(
       flightNumber: json['flightNumber'] as String,
       aircraft: json['aircraft'] as String,
-      prices: Map<String, int>.from(json['prices']),
-      seats: Map<String, int>.from(json['seats']),
-      confirmedPassengers: (json['confirmedPassengers'] as Map<String, dynamic>)
+      prices: (json['prices'] as Map<String, dynamic>).map(
+        (key, value) => MapEntry(key, (value as num).toInt()),
+      ),
+      seats: (json['seats'] as Map<String, dynamic>).map(
+        (key, value) => MapEntry(key, (value as num).toInt()),
+      ),
+      confirmedPassengers: (json['confirmedPassengers'] as Map<String, dynamic>? ?? {})
           .map((key, value) => MapEntry(key, List<String>.from(value as List))),
       standbyPassengers:
-          (json['standbyPassengers'] as Map<String, dynamic>).map(
+          (json['standbyPassengers'] as Map<String, dynamic>? ?? {}).map(
         (key, value) => MapEntry(
           key,
           (value as List)
@@ -120,7 +128,7 @@ class Flight {
               .toList(),
         ),
       ),
-      checkedInPassengers: (json['checkedInPassengers'] as Map<String, dynamic>)
+      checkedInPassengers: (json['checkedInPassengers'] as Map<String, dynamic>? ?? {})
           .map((key, value) => MapEntry(key, List<String>.from(value as List))),
       departureTime: DateTime.parse(json['departureTime'] as String),
       arrivalTime: DateTime.parse(json['arrivalTime'] as String),
@@ -139,6 +147,8 @@ class Flight {
       connectingPassengerIds: json['connectingPassengerIds'] != null
           ? List<String>.from(json['connectingPassengerIds'])
           : null,
+      originCity: json['originCity'] as String?,
+      destinationCity: json['destinationCity'] as String?,
     );
   }
 }

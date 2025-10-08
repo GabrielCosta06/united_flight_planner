@@ -1,10 +1,12 @@
-import 'package:flight_planner/screens/flight_information.dart';
 import 'package:flutter/material.dart';
-import '../widgets/hub_badge.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../widgets/background.dart';
+
+import '../core/app_theme.dart';
 import '../data/flight_data.dart';
+import '../widgets/background.dart';
+import '../widgets/hub_badge.dart';
+import 'flight_information.dart';
 
 /// Define the hub airports.
 const Set<String> hubAirports = {
@@ -30,8 +32,6 @@ const Set<String> biggestAirportsUSA = {
   'Seattle-Tacoma International Airport',
 };
 
-// United Airlines Blue
-const unitedBlue = Color.fromARGB(255, 0, 77, 155);
 
 class DestinationScreen extends StatefulWidget {
   final String origin;
@@ -46,7 +46,7 @@ class DestinationScreen extends StatefulWidget {
   });
 
   @override
-  _DestinationScreenState createState() => _DestinationScreenState();
+  State<DestinationScreen> createState() => _DestinationScreenState();
 }
 
 class _DestinationScreenState extends State<DestinationScreen> {
@@ -58,7 +58,7 @@ class _DestinationScreenState extends State<DestinationScreen> {
 
   /// Navigates to the FlightInformationScreen for the selected destination.
   void _navigateToFlightListScreen(String airport) {
-    print('Flight Type: ${widget.flightType}'); // Added print statement
+    debugPrint('Flight Type: ${widget.flightType}');
 
     Navigator.push(
       context,
@@ -156,7 +156,7 @@ class _DestinationScreenState extends State<DestinationScreen> {
             style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: unitedBlue,
+              color: AppColors.primary,
             ),
           ),
           if (trailing != null) trailing,
@@ -222,7 +222,7 @@ class _DestinationScreenState extends State<DestinationScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false, // Don't imply a back button
         titleSpacing: 0, // Remove extra spacing on the left
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         elevation: 4,
         toolbarHeight: 50,
         centerTitle: false, // Allow left alignment
@@ -259,14 +259,10 @@ class _DestinationScreenState extends State<DestinationScreen> {
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3), // Shadow color
+                color: Colors.black.withValues(alpha: 0.3), // Shadow color
                 spreadRadius: 2,
                 blurRadius: 3,
                 offset: const Offset(0, 4), // Moves shadow down
@@ -293,12 +289,12 @@ class _DestinationScreenState extends State<DestinationScreen> {
                         decoration: InputDecoration(
                           hintText: 'Search airports...',
                           hintStyle: GoogleFonts.inter(
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.white.withValues(alpha: 0.7),
                           ),
                           prefixIcon:
                               const Icon(Icons.search, color: Colors.white),
                           filled: true,
-                          fillColor: unitedBlue,
+                          fillColor: AppColors.primary,
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 12, horizontal: 16),
                           border: OutlineInputBorder(
@@ -308,7 +304,9 @@ class _DestinationScreenState extends State<DestinationScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30.0),
                             borderSide: const BorderSide(
-                                color: Colors.deepPurple, width: 1.5),
+                              color: AppColors.primaryDark,
+                              width: 1.5,
+                            ),
                           ),
                         ),
                         onChanged: (value) =>
@@ -318,7 +316,7 @@ class _DestinationScreenState extends State<DestinationScreen> {
                     const SizedBox(width: 12),
                     PopupMenuButton<String>(
                       tooltip: 'Sort options',
-                      color: unitedBlue,
+                      color: AppColors.primary,
                       onSelected: (value) => setState(() => _sortOrder = value),
                       itemBuilder: (context) => [
                         PopupMenuItem(
@@ -342,7 +340,7 @@ class _DestinationScreenState extends State<DestinationScreen> {
                       ],
                       child: Container(
                         decoration: BoxDecoration(
-                          color: unitedBlue,
+                          color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
                         padding: const EdgeInsets.all(8),
@@ -418,7 +416,7 @@ class _DestinationScreenState extends State<DestinationScreen> {
                       _buildSectionHeader(
                         'Favorite Airports',
                         trailing: IconButton(
-                          icon: const Icon(Icons.add, color: unitedBlue),
+                          icon: const Icon(Icons.add, color: AppColors.primary),
                           onPressed: candidateFavorites.isNotEmpty
                               ? () => _showAddFavoriteDialog(candidateFavorites)
                               : null,
@@ -455,7 +453,7 @@ class _DestinationScreenState extends State<DestinationScreen> {
                           child: Text(
                             'No favorite airports added yet.',
                             style: GoogleFonts.inter(
-                              color: unitedBlue.withOpacity(0.7),
+                              color: AppColors.primary.withValues(alpha: 0.7),
                               fontSize: 16,
                             ),
                           ),
@@ -465,20 +463,20 @@ class _DestinationScreenState extends State<DestinationScreen> {
                         title: Text(
                           'Other Airports',
                           style: GoogleFonts.inter(
-                            color: unitedBlue,
+                            color: AppColors.primary,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        collapsedIconColor: unitedBlue,
-                        iconColor: unitedBlue,
+                        collapsedIconColor: AppColors.primary,
+                        iconColor: AppColors.primary,
                         backgroundColor: Colors.transparent,
                         children: others.map((airport) {
                           return ListTile(
                             title: Text(
                               airportCodes[airport] ?? airport,
                               style: GoogleFonts.inter(
-                                color: unitedBlue,
+                                color: AppColors.primary,
                               ),
                             ),
                             onTap: () => _navigateToFlightListScreen(airport),
@@ -581,7 +579,7 @@ class DestinationCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.withValues(alpha: 0.7),
                         Colors.transparent,
                       ],
                       begin: Alignment.bottomCenter,

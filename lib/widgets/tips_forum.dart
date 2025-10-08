@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 /// A widget that shows a list of travel tip posts.
 class TravelTipsForum extends StatelessWidget {
@@ -33,7 +33,6 @@ class _TipPost extends StatelessWidget {
   final String employeeName;
   final String tip;
   const _TipPost({
-    super.key,
     required this.employeeName,
     required this.tip,
   });
@@ -49,7 +48,7 @@ class _TipPost extends StatelessWidget {
       ),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: unitedBlue,
+          backgroundColor: AppColors.primary,
           child: Text(
             employeeName.isNotEmpty ? employeeName[0].toUpperCase() : 'E',
             style: const TextStyle(color: Colors.white),

@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'flight_status_screen.dart';
 import '../models/flight.dart';
 import 'booking_service.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class ManageReservationsScreen extends StatefulWidget {
   final Flight flight;
@@ -35,7 +35,7 @@ class ManageReservationsScreen extends StatefulWidget {
   });
 
   @override
-  _ManageReservationsScreenState createState() =>
+  State<ManageReservationsScreen> createState() =>
       _ManageReservationsScreenState();
 }
 
@@ -54,7 +54,7 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         elevation: 4,
         toolbarHeight: 50,
         centerTitle: false,
@@ -89,14 +89,10 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 spreadRadius: 2,
                 blurRadius: 3,
                 offset: const Offset(0, 4),
@@ -224,7 +220,7 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
                             title: Text(
                               "View flight status",
                               style: GoogleFonts.inter(
-                                  fontSize: 16, color: unitedBlue),
+                                  fontSize: 16, color: AppColors.primary),
                             ),
                             trailing:
                                 const Icon(Icons.arrow_forward_ios, size: 16),
@@ -274,7 +270,7 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: unitedBlue,
+                      backgroundColor: AppColors.primary,
                       textStyle: TextStyle(color: Colors.white),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
@@ -290,7 +286,7 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: unitedBlue,
+                      backgroundColor: AppColors.primary,
                       textStyle: TextStyle(color: Colors.white),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
@@ -323,7 +319,7 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
             Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: unitedBlue,
+                  backgroundColor: AppColors.primary,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                   shape: RoundedRectangleBorder(

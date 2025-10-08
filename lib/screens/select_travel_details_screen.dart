@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/flight.dart';
 import 'review_trip.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class SelectTravelDetailsScreen extends StatefulWidget {
   final String currentEmployeeId;
@@ -17,7 +17,7 @@ class SelectTravelDetailsScreen extends StatefulWidget {
   });
 
   @override
-  _SelectTravelDetailsScreenState createState() =>
+  State<SelectTravelDetailsScreen> createState() =>
       _SelectTravelDetailsScreenState();
 }
 
@@ -87,7 +87,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.flight, color: unitedBlue),
+              const Icon(Icons.flight, color: AppColors.primary),
               const SizedBox(width: 8),
               Text(
                 "Flight Selected",
@@ -109,7 +109,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.schedule, size: 16, color: unitedBlue),
+                  const Icon(Icons.schedule, size: 16, color: AppColors.primary),
                   const SizedBox(width: 4),
                   Text(
                     "Departure: ${timeFormat.format(flight.departureTime)}",
@@ -119,7 +119,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
               ),
               Row(
                 children: [
-                  const Icon(Icons.schedule, size: 16, color: unitedBlue),
+                  const Icon(Icons.schedule, size: 16, color: AppColors.primary),
                   const SizedBox(width: 4),
                   Text(
                     "Arrival: ${timeFormat.format(flight.arrivalTime)}",
@@ -135,7 +135,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.flight_takeoff, size: 16, color: unitedBlue),
+                  const Icon(Icons.flight_takeoff, size: 16, color: AppColors.primary),
                   const SizedBox(width: 4),
                   Text(
                     "From: ${flight.originAirportCode}",
@@ -145,7 +145,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
               ),
               Row(
                 children: [
-                  const Icon(Icons.flight_land, size: 16, color: unitedBlue),
+                  const Icon(Icons.flight_land, size: 16, color: AppColors.primary),
                   const SizedBox(width: 4),
                   Text(
                     "To: ${flight.destinationAirportCode}",
@@ -158,7 +158,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.timer, size: 16, color: unitedBlue),
+              const Icon(Icons.timer, size: 16, color: AppColors.primary),
               const SizedBox(width: 4),
               Text(
                 "Duration: $durationStr",
@@ -182,7 +182,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.info_outline, color: unitedBlue),
+              const Icon(Icons.info_outline, color: AppColors.primary),
               const SizedBox(width: 8),
               Text(
                 "Selections by Travelers",
@@ -246,7 +246,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.person, color: unitedBlue),
+              const Icon(Icons.person, color: AppColors.primary),
               const SizedBox(width: 8),
               Text(
                 "$employeeId (Employee)",
@@ -258,7 +258,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
           Row(
             children: [
               Checkbox(
-                activeColor: unitedBlue,
+                activeColor: AppColors.primary,
                 value: travelingWithWorkCrew,
                 onChanged: (value) {
                   setState(() {
@@ -324,7 +324,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         elevation: 4,
         toolbarHeight: 50,
         centerTitle: false,
@@ -359,11 +359,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
                 color: Colors.black54,
@@ -388,7 +384,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
               const SizedBox(height: 24),
               // Navigation list tiles with icons.
               ListTile(
-                leading: const Icon(Icons.info, color: unitedBlue),
+                leading: const Icon(Icons.info, color: AppColors.primary),
                 title: Text(
                   "KTN / redress number / gender",
                   style: GoogleFonts.inter(),
@@ -398,7 +394,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
               ),
               const Divider(),
               ListTile(
-                leading: const Icon(Icons.support_agent, color: unitedBlue),
+                leading: const Icon(Icons.support_agent, color: AppColors.primary),
                 title: Text(
                   "Travel needs",
                   style: GoogleFonts.inter(),
@@ -408,7 +404,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
               ),
               const Divider(),
               ListTile(
-                leading: const Icon(Icons.child_friendly, color: unitedBlue),
+                leading: const Icon(Icons.child_friendly, color: AppColors.primary),
                 title: Text(
                   "Add lap child",
                   style: GoogleFonts.inter(),
@@ -424,7 +420,7 @@ class _SelectTravelDetailsScreenState extends State<SelectTravelDetailsScreen> {
                         horizontal: 32, vertical: 14),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24)),
-                    backgroundColor: unitedBlue,
+                    backgroundColor: AppColors.primary,
                   ),
                   onPressed: () {
                     Navigator.push(
@@ -472,7 +468,7 @@ class DetailScreen extends StatelessWidget {
           title,
           style: GoogleFonts.inter(),
         ),
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         centerTitle: true,
       ),
       body: Center(

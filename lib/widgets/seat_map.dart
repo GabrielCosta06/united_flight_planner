@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/flight.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class RealisticCabinSeatMap extends StatelessWidget {
   final String cabin;
@@ -140,7 +140,7 @@ class RealisticCabinSeatMap extends StatelessWidget {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Icon(Icons.event_seat,
-                                                color: unitedBlue, size: 48),
+                                                color: AppColors.primary, size: 48),
                                             const SizedBox(height: 12),
                                             Text("Passenger Info",
                                                 style: GoogleFonts.inter(
@@ -177,7 +177,7 @@ class RealisticCabinSeatMap extends StatelessWidget {
                                             const SizedBox(height: 16),
                                             ElevatedButton.icon(
                                               style: ElevatedButton.styleFrom(
-                                                backgroundColor: unitedBlue,
+                                                backgroundColor: AppColors.primary,
                                                 foregroundColor: Colors.white,
                                               ),
                                               onPressed: () =>
@@ -231,7 +231,7 @@ class RealisticCabinSeatMap extends StatelessWidget {
 }
 
 const Color availableSeatColor = Color.fromARGB(255, 187, 187, 187);
-const Color occupiedSeatColor = unitedBlue;
+const Color occupiedSeatColor = AppColors.primary;
 const Color bookedSeatColor = Color.fromARGB(255, 63, 168, 253);
 const Color connectingSeatColor = Color(0xFFFFC107);
 
@@ -253,7 +253,7 @@ class AirplaneNosePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blueGrey.withOpacity(0.3)
+      ..color = Colors.blueGrey.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
     final path = Path();
     path.moveTo(0, size.height);
@@ -286,7 +286,7 @@ class AirplaneTailPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blueGrey.withOpacity(0.3)
+      ..color = Colors.blueGrey.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
     final path = Path();
     path.moveTo(0, 0);
@@ -311,7 +311,7 @@ class SeatWidget extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color.withOpacity(0.9), color],
+          colors: [color.withValues(alpha: 0.9), color],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -324,14 +324,14 @@ class SeatWidget extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Icon(Icons.event_seat,
-              color: Colors.white.withOpacity(0.8), size: 28),
+              color: Colors.white.withValues(alpha: 0.8), size: 28),
           Positioned(
             bottom: 4,
             right: 4,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
+                color: Colors.black.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -474,7 +474,7 @@ class SeatMapScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         leadingWidth: 0,
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         elevation: 4,
         toolbarHeight: 50,
         centerTitle: false,
@@ -504,14 +504,10 @@ class SeatMapScreen extends StatelessWidget {
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 spreadRadius: 2,
                 blurRadius: 3,
                 offset: Offset(0, 4),

@@ -6,15 +6,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '/data/employee_data.dart'; // Adjust the import if needed
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class AccountScreen extends StatefulWidget {
   final String currentEmployeeId; // This is actually the username.
   const AccountScreen({super.key, required this.currentEmployeeId});
 
   @override
-  _AccountScreenState createState() => _AccountScreenState();
+  State<AccountScreen> createState() => _AccountScreenState();
 }
 
 class _AccountScreenState extends State<AccountScreen> {
@@ -98,10 +98,12 @@ class _AccountScreenState extends State<AccountScreen> {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
         await picker.pickImage(source: ImageSource.gallery);
+    if (!mounted) return;
     if (pickedFile != null) {
       if (kIsWeb) {
         // For web: read the image bytes.
         final bytes = await pickedFile.readAsBytes();
+        if (!mounted) return;
         setState(() {
           _profileImageBytes = bytes;
         });
@@ -127,7 +129,7 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: unitedBlue.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -136,7 +138,7 @@ class _AccountScreenState extends State<AccountScreen> {
               style: GoogleFonts.inter(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: unitedBlue,
+                color: AppColors.primary,
               ),
             ),
           ),
@@ -171,7 +173,7 @@ class _AccountScreenState extends State<AccountScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         elevation: 4,
         toolbarHeight: 50,
         centerTitle: false,
@@ -204,14 +206,10 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 spreadRadius: 2,
                 blurRadius: 3,
                 offset: const Offset(0, 4),
@@ -266,7 +264,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             onTap: _pickImage,
                             child: CircleAvatar(
                               radius: 10,
-                              backgroundColor: unitedBlue,
+                              backgroundColor: AppColors.primary,
                               child: const Icon(
                                 Icons.edit,
                                 size: 12,
@@ -326,7 +324,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: ExpansionTile(
-                leading: const Icon(Icons.menu_book, color: unitedBlue),
+                leading: const Icon(Icons.menu_book, color: AppColors.primary),
                 title: Text(
                   'Programs & Policies',
                   style: GoogleFonts.inter(
@@ -384,7 +382,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: ExpansionTile(
-                leading: const Icon(Icons.link, color: unitedBlue),
+                leading: const Icon(Icons.link, color: AppColors.primary),
                 title: Text(
                   'Quick Links',
                   style: GoogleFonts.inter(

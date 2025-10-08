@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../widgets/hub_badge.dart';
-import '../widgets/background.dart';
-import 'flight_type_screen.dart';
+
+import '../core/app_theme.dart';
 import '../data/flight_data.dart';
+import '../widgets/background.dart';
+import '../widgets/hub_badge.dart';
+import 'flight_type_screen.dart';
 
 const Set<String> hubAirports = {
   'Chicago O\'Hare',
@@ -28,7 +30,7 @@ const Set<String> biggestAirportsUSA = {
   'Seattle-Tacoma International Airport',
 };
 
-const unitedBlue = Color.fromARGB(255, 0, 77, 155);
+
 
 class OriginScreen extends StatefulWidget {
   final String currentEmployeeId; // Added property
@@ -36,7 +38,7 @@ class OriginScreen extends StatefulWidget {
   const OriginScreen({super.key, required this.currentEmployeeId});
 
   @override
-  _OriginScreenState createState() => _OriginScreenState();
+  State<OriginScreen> createState() => _OriginScreenState();
 }
 
 class _OriginScreenState extends State<OriginScreen> {
@@ -175,7 +177,7 @@ class _OriginScreenState extends State<OriginScreen> {
           automaticallyImplyLeading: false,
           titleSpacing: 0,
           leadingWidth: 0,
-          backgroundColor: unitedBlue,
+          backgroundColor: AppColors.primary,
           elevation: 4,
           toolbarHeight: 50,
           centerTitle: false,
@@ -203,16 +205,12 @@ class _OriginScreenState extends State<OriginScreen> {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
           ),
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: AppGradients.primary,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3), // Shadow color
+                  color: Colors.black.withValues(alpha: 0.3), // Shadow color
                   spreadRadius: 2,
                   blurRadius: 3,
                   offset: const Offset(0, 4), // Moves shadow down
@@ -254,7 +252,7 @@ class _OriginScreenState extends State<OriginScreen> {
                         title: 'Favorite Airports',
                         airports: favorites,
                         trailing: IconButton(
-                          icon: const Icon(Icons.add, color: unitedBlue),
+                          icon: const Icon(Icons.add, color: AppColors.primary),
                           onPressed: candidateFavorites.isNotEmpty
                               ? () => _showAddFavoriteDialog(candidateFavorites)
                               : null,
@@ -269,7 +267,7 @@ class _OriginScreenState extends State<OriginScreen> {
                           child: Text(
                             'No favorite airports added yet.',
                             style: GoogleFonts.inter(
-                              color: unitedBlue.withOpacity(0.7),
+                              color: AppColors.primary.withValues(alpha: 0.7),
                               fontSize: 16,
                             ),
                           ),
@@ -278,20 +276,20 @@ class _OriginScreenState extends State<OriginScreen> {
                         title: Text(
                           'Other Airports',
                           style: GoogleFonts.inter(
-                            color: unitedBlue,
+                            color: AppColors.primary,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        collapsedIconColor: unitedBlue,
-                        iconColor: unitedBlue,
+                        collapsedIconColor: AppColors.primary,
+                        iconColor: AppColors.primary,
                         backgroundColor: Colors.transparent,
                         children: others.map((airport) {
                           return ListTile(
                             title: Text(
                               airportCodes[airport] ?? airport,
                               style: GoogleFonts.inter(
-                                color: unitedBlue,
+                                color: AppColors.primary,
                               ),
                             ),
                             onTap: () => _navigateToFlightTypeScreen(airport),
@@ -337,11 +335,11 @@ class SearchAndSortBar extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'Search airports...',
                 hintStyle: GoogleFonts.inter(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                 ),
                 prefixIcon: const Icon(Icons.search, color: Colors.white),
                 filled: true,
-                fillColor: unitedBlue,
+                fillColor: AppColors.primary,
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 border: OutlineInputBorder(
@@ -360,7 +358,7 @@ class SearchAndSortBar extends StatelessWidget {
           const SizedBox(width: 12),
           PopupMenuButton<String>(
             tooltip: 'Sort options',
-            color: unitedBlue,
+            color: AppColors.primary,
             onSelected: onSortSelected,
             itemBuilder: (context) => [
               PopupMenuItem(
@@ -384,7 +382,7 @@ class SearchAndSortBar extends StatelessWidget {
             ],
             child: Container(
               decoration: BoxDecoration(
-                color: unitedBlue,
+                color: AppColors.primary,
                 shape: BoxShape.circle,
               ),
               padding: const EdgeInsets.all(8),
@@ -423,7 +421,7 @@ class AirportGridSection extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: unitedBlue,
+              color: AppColors.primary,
             ),
           ),
           if (trailing != null) trailing,
@@ -514,7 +512,7 @@ class AirportCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.withValues(alpha: 0.7),
                         Colors.transparent,
                       ],
                       begin: Alignment.bottomCenter,
@@ -537,7 +535,7 @@ class AirportCard extends StatelessWidget {
                           Shadow(
                             offset: Offset(0, 1),
                             blurRadius: 2,
-                            color: unitedBlue,
+                            color: AppColors.primary,
                           ),
                         ],
                       ),

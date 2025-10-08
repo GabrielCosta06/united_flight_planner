@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../core/app_theme.dart';
 import '../widgets/background.dart';
 import '../widgets/upcoming_flights_card.dart';
 import '../widgets/news_card.dart';
@@ -11,46 +13,28 @@ import 'origin_screen.dart';
 import 'account_screen.dart';
 import 'trips_screen.dart';
 import '../data/flight_data.dart' as flight_data;
-import '../data/employee_data.dart';
 import 'flight_list_screen.dart';
-
-const Color unitedBlue = Color(0xFF005DAA);
+import '../data/employee_data.dart';
 
 // Global key for the DashboardScreen state (if needed).
-final GlobalKey<_DashboardScreenState> dashboardKey =
-    GlobalKey<_DashboardScreenState>();
+final GlobalKey<DashboardScreenState> dashboardKey =
+    GlobalKey<DashboardScreenState>();
 
-void main() {
-  loadEmployeeData();
-  runApp(const MyApp());
-}
+/// Arguments required to launch the [MainPage] via named routes.
+class MainPageArguments {
+  final String currentEmployeeId;
 
-class MyApp extends StatelessWidget {
-  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
-
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'United Airlines App',
-      debugShowCheckedModeBanner: false,
-      scaffoldMessengerKey: scaffoldMessengerKey,
-      theme: ThemeData(
-        textTheme: GoogleFonts.interTextTheme(),
-      ),
-      home: MainPage(currentEmployeeId: 'example_employee_id'),
-    );
-  }
+  const MainPageArguments(this.currentEmployeeId);
 }
 
 class MainPage extends StatefulWidget {
+  static const String routeName = '/main';
+
   final String currentEmployeeId;
   const MainPage({super.key, required this.currentEmployeeId});
 
   @override
-  _MainPageState createState() => _MainPageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
@@ -137,7 +121,7 @@ class _MainPageState extends State<MainPage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        selectedItemColor: unitedBlue,
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         onTap: _onBottomNavItemTapped,
         type: BottomNavigationBarType.fixed,
@@ -164,10 +148,10 @@ class DashboardScreen extends StatefulWidget {
       {super.key, required this.employeeId, required this.upcomingFlightsKey});
 
   @override
-  _DashboardScreenState createState() => _DashboardScreenState();
+  State<DashboardScreen> createState() => DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     // Recalculate header info on each build.
@@ -204,7 +188,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             titleSpacing: 0,
             leadingWidth: 0,
             pinned: true,
-            backgroundColor: unitedBlue,
+            backgroundColor: AppColors.primary,
             elevation: 4,
             toolbarHeight: 50,
             centerTitle: false,
@@ -237,14 +221,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             flexibleSpace: Container(
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                gradient: AppGradients.primary,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     spreadRadius: 2,
                     blurRadius: 3,
                     offset: const Offset(0, 4),
@@ -290,7 +270,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: unitedBlue,
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -308,7 +288,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: unitedBlue,
+                      color: AppColors.primary,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -407,7 +387,7 @@ class SectionHeader extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             children: [
-              if (icon != null) Icon(icon, color: unitedBlue),
+              if (icon != null) Icon(icon, color: AppColors.primary),
               if (icon != null) const SizedBox(width: 16),
               Expanded(
                 child: Text(

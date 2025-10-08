@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const unitedBlue = Color.fromARGB(255, 0, 77, 155);
+import '../core/app_theme.dart';
 
 /// A small badge widget to mark hub airports.
 class HubBadge extends StatelessWidget {
@@ -11,7 +11,7 @@ class HubBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: const BoxDecoration(
-        color: unitedBlue,
+        color: AppColors.primary,
         shape: BoxShape.circle,
       ),
       child: const Icon(

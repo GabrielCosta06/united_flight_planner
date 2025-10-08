@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class PriorityTable extends StatelessWidget {
   final Map<String, Map<String, String>> priorityDetails;
@@ -72,12 +72,12 @@ class PriorityTable extends StatelessWidget {
     return TableRow(
       decoration: BoxDecoration(color: Colors.blue.shade50),
       children: [
-        _buildTableCell('$position', isBold: true, textColor: unitedBlue),
+        _buildTableCell('$position', isBold: true, textColor: AppColors.primary),
         _buildTableCell(
           label,
           isBold: true,
           softWrap: true,
-          leading: const Icon(Icons.star, color: unitedBlue, size: 18),
+          leading: const Icon(Icons.star, color: AppColors.primary, size: 18),
         ),
         _buildTableCell(
           priority,
@@ -96,7 +96,7 @@ class PriorityTable extends StatelessWidget {
     // Add header row.
     rows.add(
       TableRow(
-        decoration: BoxDecoration(color: unitedBlue.withOpacity(0.1)),
+        decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1)),
         children: [
           'Position',
           'Name',

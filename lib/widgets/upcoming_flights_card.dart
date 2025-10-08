@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
 import 'dart:ui';
 import '../models/flight.dart';
-import '../data/flight_data.dart' as flightData;
+import '../data/flight_data.dart' as flight_data;
 import '../screens/flight_detail_screen.dart';
 
 class UpcomingFlightsWidget extends StatefulWidget {
@@ -28,7 +28,7 @@ class UpcomingFlightsWidgetState extends State<UpcomingFlightsWidget> {
   Future<void> _loadFlights() async {
     // Simulate network delay
     await Future.delayed(const Duration(seconds: 1));
-    allFlights = flightData.fakeFlights.values.expand((list) => list).toList();
+    allFlights = flight_data.fakeFlights.values.expand((list) => list).toList();
     _filterUpcomingFlights();
     setState(() {
       _isLoading = false;
@@ -87,7 +87,7 @@ class RealFlightCard extends StatefulWidget {
       {super.key, required this.flight, required this.currentEmployeeId});
 
   @override
-  _RealFlightCardState createState() => _RealFlightCardState();
+  State<RealFlightCard> createState() => _RealFlightCardState();
 }
 
 class _RealFlightCardState extends State<RealFlightCard>

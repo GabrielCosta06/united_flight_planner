@@ -5,11 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../models/flight.dart';
-import '../data/flight_data.dart' as flightData;
+import '../data/flight_data.dart' as flight_data;
 import '../widgets/seat_map.dart';
 import 'important_notice_screen.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class FlightStatusScreen extends StatefulWidget {
   final String currentEmployeeId;
@@ -24,7 +24,7 @@ class FlightStatusScreen extends StatefulWidget {
   });
 
   @override
-  _FlightStatusScreenState createState() => _FlightStatusScreenState();
+  State<FlightStatusScreen> createState() => _FlightStatusScreenState();
 }
 
 class _FlightStatusScreenState extends State<FlightStatusScreen> {
@@ -50,7 +50,7 @@ class _FlightStatusScreenState extends State<FlightStatusScreen> {
   Future<void> _loadFlights() async {
     await Future.delayed(const Duration(seconds: 1));
     final allFlights =
-        flightData.fakeFlights.values.expand((list) => list).toList();
+        flight_data.fakeFlights.values.expand((list) => list).toList();
 
     upcomingFlights = allFlights.where((flight) {
       bool isUpcoming = flight.departureTime.isAfter(DateTime.now());
@@ -135,7 +135,7 @@ class _FlightStatusScreenState extends State<FlightStatusScreen> {
         const SizedBox(height: 8),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: canCheckIn ? unitedBlue : Colors.grey,
+            backgroundColor: canCheckIn ? AppColors.primary : Colors.grey,
             foregroundColor: Colors.white,
           ),
           onPressed: canCheckIn ? _handleCheckIn : null,
@@ -187,7 +187,7 @@ class _FlightStatusScreenState extends State<FlightStatusScreen> {
       automaticallyImplyLeading: false,
       titleSpacing: 0,
       leadingWidth: 0,
-      backgroundColor: unitedBlue,
+      backgroundColor: AppColors.primary,
       elevation: 4,
       toolbarHeight: 50,
       centerTitle: false,
@@ -217,14 +217,10 @@ class _FlightStatusScreenState extends State<FlightStatusScreen> {
       ),
       flexibleSpace: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          gradient: AppGradients.primary,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               spreadRadius: 2,
               blurRadius: 3,
               offset: const Offset(0, 4),
@@ -288,9 +284,9 @@ class FlightOptionCard extends StatelessWidget {
         width: 200,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? unitedBlue.withOpacity(0.1) : Colors.white,
+          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Colors.white,
           border: Border.all(
-              color: isSelected ? unitedBlue : Colors.grey.shade300, width: 2),
+              color: isSelected ? AppColors.primary : Colors.grey.shade300, width: 2),
           borderRadius: BorderRadius.circular(12),
           boxShadow: const [
             BoxShadow(
@@ -313,7 +309,7 @@ class FlightOptionCard extends StatelessWidget {
             Row(
               children: [
                 const Icon(Icons.airplanemode_active,
-                    size: 20, color: unitedBlue),
+                    size: 20, color: AppColors.primary),
                 const SizedBox(width: 4),
                 Text(
                   flight.aircraft,

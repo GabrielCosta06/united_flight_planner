@@ -41,14 +41,14 @@ const List<String> hubs = [
 ];
 
 /// Enum representing flight types.
-enum FlightType { Domestic, International }
+enum FlightType { domestic, international }
 
 /// Converts a [FlightType] enum to its corresponding string.
 String flightTypeToString(FlightType flightType) {
   switch (flightType) {
-    case FlightType.Domestic:
+    case FlightType.domestic:
       return 'Domestic';
-    case FlightType.International:
+    case FlightType.international:
       return 'International';
   }
 }
@@ -58,12 +58,12 @@ String flightTypeToString(FlightType flightType) {
 FlightType parseFlightType(String flightTypeString) {
   final normalized = flightTypeString.toLowerCase();
   if (normalized == 'domestic') {
-    return FlightType.Domestic;
+    return FlightType.domestic;
   } else if (normalized == 'international') {
-    return FlightType.International;
+    return FlightType.international;
   } else {
     // default to Domestic if unknown
-    return FlightType.Domestic;
+    return FlightType.domestic;
   }
 }
 
@@ -80,7 +80,7 @@ String generateFlightKey(
 final Map<String, List<Flight>> fakeFlights = {
   // Merged flights for Newark Liberty International Airport -> Houston Intercontinental Airport (Domestic)
   generateFlightKey('Newark Liberty International Airport',
-      'Houston Intercontinental Airport', FlightType.Domestic): [
+      'Houston Intercontinental Airport', FlightType.domestic): [
     // Flight UA101: Nonstop with Wi-Fi, using Boeing 737-900.
     Flight(
       originCity: 'Newark',
@@ -618,7 +618,7 @@ final Map<String, List<Flight>> fakeFlights = {
     ),
   ],
   generateFlightKey('Washington Dulles International Airport',
-      'Frankfurt International', FlightType.International): [
+      'Frankfurt International', FlightType.international): [
     // Flight UA201: Nonstop international flight with Wi-Fi, using Boeing 777-200 (77u).
     Flight(
       originCity: 'Washington',
@@ -767,7 +767,7 @@ final Map<String, List<Flight>> fakeFlights = {
     ),
   ],
   generateFlightKey('Chicago O\'Hare', 'Houston Intercontinental Airport',
-      FlightType.Domestic): [
+      FlightType.domestic): [
     // Flight UA301.
     Flight(
       originCity: 'Chicago',
@@ -809,7 +809,7 @@ final Map<String, List<Flight>> fakeFlights = {
     ),
   ],
   generateFlightKey('Denver International Airport',
-      'San Francisco International Airport', FlightType.Domestic): [
+      'San Francisco International Airport', FlightType.domestic): [
     // Flight UA302.
     Flight(
       originCity: 'Denver',
@@ -852,7 +852,7 @@ final Map<String, List<Flight>> fakeFlights = {
     ),
   ],
   generateFlightKey('LAX International', 'Newark Liberty International Airport',
-      FlightType.Domestic): [
+      FlightType.domestic): [
     // Flight UA303.
     Flight(
       originCity: 'Los Angeles',
@@ -895,7 +895,7 @@ final Map<String, List<Flight>> fakeFlights = {
     ),
   ],
   generateFlightKey('Houston Intercontinental Airport',
-      'Washington Dulles International Airport', FlightType.Domestic): [
+      'Washington Dulles International Airport', FlightType.domestic): [
     // Flight UA304.
     Flight(
       originCity: 'Houston',
@@ -938,7 +938,7 @@ final Map<String, List<Flight>> fakeFlights = {
     ),
   ],
   generateFlightKey('San Francisco International Airport', 'Chicago O\'Hare',
-      FlightType.Domestic): [
+      FlightType.domestic): [
     // Flight UA305.
     Flight(
       originCity: 'San Francisco',

@@ -6,8 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/flight.dart';
 import 'booking_service.dart';
 import 'booking_confirmation.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class ReviewTripScreen extends StatefulWidget {
   final String currentEmployeeId;
@@ -28,7 +28,7 @@ class ReviewTripScreen extends StatefulWidget {
   });
 
   @override
-  _ReviewTripScreenState createState() => _ReviewTripScreenState();
+  State<ReviewTripScreen> createState() => _ReviewTripScreenState();
 }
 
 class _ReviewTripScreenState extends State<ReviewTripScreen> {
@@ -68,7 +68,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
       children: [
         Row(
           children: [
-            const Icon(Icons.flight, color: unitedBlue),
+            const Icon(Icons.flight, color: AppColors.primary),
             const SizedBox(width: 8),
             Text("Flight Number: ", style: normalStyle),
             Text(flight.flightNumber, style: boldStyle),
@@ -77,7 +77,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Icon(Icons.calendar_today, color: unitedBlue),
+            const Icon(Icons.calendar_today, color: AppColors.primary),
             const SizedBox(width: 8),
             Text("Date: ", style: normalStyle),
             Text(dateFormat.format(departure), style: boldStyle),
@@ -86,7 +86,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Icon(Icons.schedule, color: unitedBlue),
+            const Icon(Icons.schedule, color: AppColors.primary),
             const SizedBox(width: 8),
             Text("Departure: ", style: normalStyle),
             Text(timeFormat.format(departure), style: boldStyle),
@@ -95,7 +95,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Icon(Icons.schedule, color: unitedBlue),
+            const Icon(Icons.schedule, color: AppColors.primary),
             const SizedBox(width: 8),
             Text("Arrival: ", style: normalStyle),
             Text(timeFormat.format(arrival), style: boldStyle),
@@ -104,12 +104,12 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Icon(Icons.location_on, color: unitedBlue),
+            const Icon(Icons.location_on, color: AppColors.primary),
             const SizedBox(width: 8),
             Text("From: ", style: normalStyle),
             Text(flight.originAirportCode, style: boldStyle),
             const SizedBox(width: 24),
-            const Icon(Icons.flight_land, color: unitedBlue),
+            const Icon(Icons.flight_land, color: AppColors.primary),
             const SizedBox(width: 8),
             Text("To: ", style: normalStyle),
             Text(flight.destinationAirportCode, style: boldStyle),
@@ -118,7 +118,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Icon(Icons.timelapse, color: unitedBlue),
+            const Icon(Icons.timelapse, color: AppColors.primary),
             const SizedBox(width: 8),
             Text("Duration: ", style: normalStyle),
             Text(durationStr, style: boldStyle),
@@ -145,6 +145,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
 
     // Simulate a delay for booking processing.
     await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
 
     // Simulate a booking call.
     final String preferredCabin = widget.flight!.aircraft.contains("777-200")
@@ -157,12 +158,14 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
       widget.currentEmployeeId,
     );
 
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
 
     // Show the result dialog with animation.
     await _showResultDialog(success);
+    if (!mounted) return;
 
     if (success) {
       final bool isDomestic =
@@ -194,6 +197,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
 
     // Wait for 2 seconds, then close the dialog using the root navigator.
     await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
     Navigator.of(context, rootNavigator: true).pop();
   }
 
@@ -208,7 +212,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         elevation: 4,
         toolbarHeight: 50,
         centerTitle: false,
@@ -243,14 +247,10 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 spreadRadius: 2,
                 blurRadius: 3,
                 offset: const Offset(0, 4),
@@ -275,7 +275,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
                 padding: cardPadding,
                 child: Row(
                   children: [
-                    const Icon(Icons.attach_money, color: unitedBlue),
+                    const Icon(Icons.attach_money, color: AppColors.primary),
                     const SizedBox(width: 8),
                     Text(
                       "Total Price: ",
@@ -287,7 +287,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
                       style: GoogleFonts.inter(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: unitedBlue),
+                          color: AppColors.primary),
                     ),
                   ],
                 ),
@@ -345,7 +345,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading:
-                          const Icon(Icons.account_circle, color: unitedBlue),
+                          const Icon(Icons.account_circle, color: AppColors.primary),
                       title: Text(
                         "Name: ${widget.abbreviatedName2}",
                         style: GoogleFonts.inter(fontSize: 16),
@@ -353,7 +353,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.card_travel, color: unitedBlue),
+                      leading: const Icon(Icons.card_travel, color: AppColors.primary),
                       title: Text(
                         "Pass Type: ${widget.passType}",
                         style: GoogleFonts.inter(fontSize: 16),
@@ -362,7 +362,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: const Icon(Icons.miscellaneous_services,
-                          color: unitedBlue),
+                          color: AppColors.primary),
                       title: Text(
                         "Service: ${widget.service}",
                         style: GoogleFonts.inter(fontSize: 16),
@@ -371,7 +371,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading:
-                          const Icon(Icons.notifications, color: unitedBlue),
+                          const Icon(Icons.notifications, color: AppColors.primary),
                       title: Text(
                         "Notifications: ${widget.notification}",
                         style: GoogleFonts.inter(fontSize: 16),
@@ -397,7 +397,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
                     labelText: "Email Address",
                     labelStyle: GoogleFonts.inter(),
                     border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.email, color: unitedBlue),
+                    prefixIcon: const Icon(Icons.email, color: AppColors.primary),
                   ),
                 ),
               ),
@@ -414,7 +414,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.info_outline, color: unitedBlue),
+                    const Icon(Icons.info_outline, color: AppColors.primary),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -430,7 +430,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
             Center(
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: unitedBlue,
+                  backgroundColor: AppColors.primary,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -464,10 +464,10 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
 class _ResultDialog extends StatefulWidget {
   final bool success;
 
-  const _ResultDialog({super.key, required this.success});
+  const _ResultDialog({required this.success});
 
   @override
-  __ResultDialogState createState() => __ResultDialogState();
+  State<_ResultDialog> createState() => __ResultDialogState();
 }
 
 class __ResultDialogState extends State<_ResultDialog>

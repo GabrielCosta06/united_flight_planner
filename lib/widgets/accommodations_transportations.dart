@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class AccommodationsTransportations extends StatelessWidget {
   const AccommodationsTransportations({super.key});
@@ -49,7 +49,6 @@ class _LinkCard extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   const _LinkCard({
-    super.key,
     required this.label,
     required this.icon,
     required this.onTap,
@@ -58,7 +57,7 @@ class _LinkCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: unitedBlue,
+      color: AppColors.primary,
       borderRadius: BorderRadius.circular(16),
       elevation: 2,
       child: InkWell(

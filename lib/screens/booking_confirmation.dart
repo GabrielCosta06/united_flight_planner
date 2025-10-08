@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/flight.dart';
 import 'manage_reservations.dart';
+import '../core/app_theme.dart';
 
-const Color unitedBlue = Color(0xFF005DAA);
 
 class BookingConfirmationScreen extends StatelessWidget {
   final String email;
@@ -58,7 +58,7 @@ class BookingConfirmationScreen extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.flight, color: unitedBlue, size: 20),
+            const Icon(Icons.flight, color: AppColors.primary, size: 20),
             const SizedBox(width: 8),
             Text(
               "Flight Number: ",
@@ -73,7 +73,7 @@ class BookingConfirmationScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Icon(Icons.calendar_today, color: unitedBlue, size: 20),
+            const Icon(Icons.calendar_today, color: AppColors.primary, size: 20),
             const SizedBox(width: 8),
             Text(
               "Date: ",
@@ -88,7 +88,7 @@ class BookingConfirmationScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Icon(Icons.schedule, color: unitedBlue, size: 20),
+            const Icon(Icons.schedule, color: AppColors.primary, size: 20),
             const SizedBox(width: 8),
             Text(
               "Departure: ",
@@ -112,7 +112,7 @@ class BookingConfirmationScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Icon(Icons.flight_takeoff, color: unitedBlue, size: 20),
+            const Icon(Icons.flight_takeoff, color: AppColors.primary, size: 20),
             const SizedBox(width: 8),
             Text(
               "From: ",
@@ -123,7 +123,7 @@ class BookingConfirmationScreen extends StatelessWidget {
               style: GoogleFonts.inter(),
             ),
             const SizedBox(width: 16),
-            const Icon(Icons.flight_land, color: unitedBlue, size: 20),
+            const Icon(Icons.flight_land, color: AppColors.primary, size: 20),
             const SizedBox(width: 8),
             Text(
               "To: ",
@@ -138,7 +138,7 @@ class BookingConfirmationScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Icon(Icons.timer, color: unitedBlue, size: 20),
+            const Icon(Icons.timer, color: AppColors.primary, size: 20),
             const SizedBox(width: 8),
             Text(
               "Duration: ",
@@ -157,7 +157,7 @@ class BookingConfirmationScreen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        backgroundColor: unitedBlue,
+        backgroundColor: AppColors.primary,
         elevation: 4,
         toolbarHeight: 50,
         centerTitle: false,
@@ -192,14 +192,10 @@ class BookingConfirmationScreen extends StatelessWidget {
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [unitedBlue, Color.fromARGB(255, 23, 0, 65)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppGradients.primary,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 spreadRadius: 2,
                 blurRadius: 3,
                 offset: const Offset(0, 4),
@@ -261,7 +257,7 @@ class BookingConfirmationScreen extends StatelessWidget {
           _buildSectionCard(
             child: Row(
               children: [
-                const Icon(Icons.confirmation_number, color: unitedBlue),
+                const Icon(Icons.confirmation_number, color: AppColors.primary),
                 const SizedBox(width: 8),
                 Text(
                   "Confirmation: $reservationNumber",
@@ -280,7 +276,7 @@ class BookingConfirmationScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.person, color: unitedBlue),
+                    const Icon(Icons.person, color: AppColors.primary),
                     const SizedBox(width: 8),
                     Text(
                       "User Information",
@@ -310,7 +306,7 @@ class BookingConfirmationScreen extends StatelessWidget {
           _buildSectionCard(
             child: Row(
               children: [
-                const Icon(Icons.attach_money, color: unitedBlue),
+                const Icon(Icons.attach_money, color: AppColors.primary),
                 const SizedBox(width: 8),
                 Text(
                   "Total Price: ",
@@ -322,7 +318,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: unitedBlue,
+                    color: AppColors.primary,
                   ),
                 ),
               ],
@@ -330,7 +326,7 @@ class BookingConfirmationScreen extends StatelessWidget {
           ),
           // Navigation rows using ListTile UI with icons.
           ListTile(
-            leading: const Icon(Icons.work, color: unitedBlue),
+            leading: const Icon(Icons.work, color: AppColors.primary),
             title: Text(
               "Baggage details",
               style:
@@ -348,7 +344,7 @@ class BookingConfirmationScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.rule, color: unitedBlue),
+            leading: const Icon(Icons.rule, color: AppColors.primary),
             title: Text(
               "Baggage rules and optional services",
               style: GoogleFonts.inter(fontSize: 16),
@@ -361,7 +357,7 @@ class BookingConfirmationScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.calendar_today, color: unitedBlue),
+            leading: const Icon(Icons.calendar_today, color: AppColors.primary),
             title: Text(
               "Add to calendar",
               style: GoogleFonts.inter(fontSize: 16),
@@ -377,7 +373,7 @@ class BookingConfirmationScreen extends StatelessWidget {
           Center(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: unitedBlue,
+                backgroundColor: AppColors.primary,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                 shape: RoundedRectangleBorder(
