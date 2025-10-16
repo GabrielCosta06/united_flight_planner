@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/flight.dart';
 import 'manage_reservations.dart';
 import '../core/app_theme.dart';
+import 'baggage_information.dart';
+import '../utils/calendar_launcher.dart';
 
 
 class BookingConfirmationScreen extends StatelessWidget {
@@ -339,7 +341,12 @@ class BookingConfirmationScreen extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios,
                 size: 16, color: Colors.grey),
             onTap: () {
-              // TODO: Navigate to Baggage details screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const BaggageDetailsScreen(),
+                ),
+              );
             },
           ),
           const Divider(),
@@ -352,7 +359,12 @@ class BookingConfirmationScreen extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios,
                 size: 16, color: Colors.grey),
             onTap: () {
-              // TODO: Navigate to Baggage rules and optional services screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const BaggageRulesScreen(),
+                ),
+              );
             },
           ),
           const Divider(),
@@ -364,8 +376,19 @@ class BookingConfirmationScreen extends StatelessWidget {
             ),
             trailing: const Icon(Icons.arrow_forward_ios,
                 size: 16, color: Colors.grey),
-            onTap: () {
-              // TODO: Add functionality to add flight to calendar
+            onTap: () async {
+              final launched = await launchFlightCalendarEvent(flight);
+              if (!context.mounted) return;
+              if (!launched) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      "Unable to open the calendar app.",
+                      style: GoogleFonts.inter(),
+                    ),
+                  ),
+                );
+              }
             },
           ),
           const SizedBox(height: 24),
@@ -395,6 +418,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                       arrivalTime: flight.arrivalTime,
                       flightStatus: "on time", // Or "delayed" if needed.
                       abbreviatedName2: abbreviatedName2,
+                      seatClass: passType,
                     ),
                   ),
                 );

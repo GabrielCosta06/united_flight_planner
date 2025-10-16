@@ -7,6 +7,7 @@ import '../models/flight.dart';
 import 'booking_service.dart';
 import 'booking_confirmation.dart';
 import '../core/app_theme.dart';
+import '../widgets/globe_plane_loader.dart';
 
 
 class ReviewTripScreen extends StatefulWidget {
@@ -259,11 +260,13 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             // Total Price Section
             Card(
               elevation: 3,
@@ -437,14 +440,7 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
                       borderRadius: BorderRadius.circular(24)),
                 ),
                 icon: _isLoading
-                    ? SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
+                    ? const GlobePlaneLoader(size: 48)
                     : const Icon(Icons.check, color: Colors.white),
                 label: Text(
                   _isLoading ? "Booking..." : "Book Itinerary",
@@ -455,6 +451,9 @@ class _ReviewTripScreenState extends State<ReviewTripScreen> {
             ),
           ],
         ),
+      ),
+          if (_isLoading) const GlobePlaneLoaderOverlay(),
+        ],
       ),
     );
   }

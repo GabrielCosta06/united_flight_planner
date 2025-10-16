@@ -9,6 +9,7 @@ import '../data/flight_data.dart' as flight_data;
 import '../widgets/seat_map.dart';
 import 'important_notice_screen.dart';
 import '../core/app_theme.dart';
+import '../widgets/globe_plane_loader.dart';
 
 
 class FlightStatusScreen extends StatefulWidget {
@@ -154,7 +155,7 @@ class _FlightStatusScreenState extends State<FlightStatusScreen> {
     return Scaffold(
       appBar: _buildAppBar(),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: GlobePlaneLoader(size: 96))
           : selectedFlight == null
               ? Center(
                   child: Text(

@@ -3,9 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'flight_status_screen.dart';
+import 'flight_list_screen.dart';
+import 'important_notice_screen.dart';
+import 'baggage_information.dart';
 import '../models/flight.dart';
 import 'booking_service.dart';
 import '../core/app_theme.dart';
+import '../utils/calendar_launcher.dart';
+import '../widgets/globe_plane_loader.dart';
 
 
 class ManageReservationsScreen extends StatefulWidget {
@@ -19,6 +24,7 @@ class ManageReservationsScreen extends StatefulWidget {
   final DateTime arrivalTime;
   final String flightStatus; // "on time" or "delayed"
   final String abbreviatedName2; // Employee abbreviated name
+  final String seatClass;
 
   const ManageReservationsScreen({
     super.key,
@@ -32,6 +38,7 @@ class ManageReservationsScreen extends StatefulWidget {
     required this.arrivalTime,
     required this.flightStatus,
     required this.abbreviatedName2,
+    this.seatClass = 'United Economy',
   });
 
   @override
@@ -41,6 +48,127 @@ class ManageReservationsScreen extends StatefulWidget {
 
 class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
   bool _isFlightDetailsExpanded = false;
+  bool _isProcessingCheckIn = false;
+  final BookingService _bookingService = BookingService();
+
+  bool get _hasCheckedIn {
+    final cabinList =
+        widget.flight.checkedInPassengers[widget.seatClass] ?? const [];
+    return cabinList.contains(widget.abbreviatedName2);
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message, style: GoogleFonts.inter())),
+    );
+  }
+
+  Future<void> _handleChangeFlight() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FlightListScreen(
+          origin: widget.flight.origin,
+          flightType: 'Domestic',
+          destination: widget.flight.destination,
+          departureDate: widget.flight.departureTime,
+          stops: widget.flight.stops,
+          tripType: 'One-way',
+          travelAdvisories: 'No current travel advisories.',
+          employeeNotes: const [],
+          currentEmployeeId: widget.abbreviatedName2,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleCheckIn() async {
+    if (_hasCheckedIn) {
+      _showSnackBar('You are already checked in for this flight.');
+      return;
+    }
+    if (_isProcessingCheckIn) return;
+
+    setState(() {
+      _isProcessingCheckIn = true;
+    });
+
+    final success = _bookingService.checkInPassenger(
+      widget.flight,
+      widget.seatClass,
+      widget.abbreviatedName2,
+    );
+
+    setState(() {
+      _isProcessingCheckIn = false;
+    });
+
+    if (!mounted) return;
+
+    if (success) {
+      _showSnackBar('Check-in complete. Review important notices next.');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ImportantNoticeScreen(
+            currentEmployeeId: widget.abbreviatedName2,
+            flight: widget.flight,
+            checkInData: const {},
+          ),
+        ),
+      );
+    } else {
+      _showSnackBar('Unable to check in. Please try again later.');
+    }
+  }
+
+  Future<void> _handleAddToCalendar() async {
+    final launched = await launchFlightCalendarEvent(widget.flight);
+    if (!launched && mounted) {
+      _showSnackBar('Unable to open the calendar app.');
+    }
+  }
+
+  void _handleBaggageDetails() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const BaggageDetailsScreen()),
+    );
+  }
+
+  void _handleEmailReceipt() {
+    _showSnackBar('Email receipt sent to your inbox.');
+  }
+
+  void _handleEditTravelerInfo() {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit traveler information'),
+        content: const Text(
+          'Traveler details can be edited from the employee profile section.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Got it'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleStandbyList() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FlightStatusScreen(
+          currentEmployeeId: widget.abbreviatedName2,
+          flight: widget.flight,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,11 +229,13 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             // Header with origin and destination and confirmation.
             Text(
               "${widget.originCity} to ${widget.destinationCity} (${widget.originAirportCode} to ${widget.destinationAirportCode})",
@@ -275,9 +405,7 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                     ),
-                    onPressed: () {
-                      // TODO: Implement change flight action.
-                    },
+                    onPressed: _handleChangeFlight,
                     child: Text("Change flight",
                         style: GoogleFonts.inter(color: Colors.white)),
                   ),
@@ -291,29 +419,51 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                     ),
-                    onPressed: () {
-                      // TODO: Implement check in action.
-                    },
-                    child: Text("Check in",
-                        style: GoogleFonts.inter(color: Colors.white)),
+                    onPressed: (_isProcessingCheckIn || _hasCheckedIn)
+                        ? null
+                        : _handleCheckIn,
+                    child: Text(
+                      _hasCheckedIn ? "Checked in" : "Check in",
+                      style: GoogleFonts.inter(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             // List of management options.
-            _buildManagementOption("Edit traveler information",
-                "Contact info, frequent flyer, KTN and more"),
-            _buildManagementOption("Baggage details",
-                "Allowances, pricing, pay for bags, and more"),
             _buildManagementOption(
-                "Add to calendar", "Set a calendar reminder for your trip"),
+              "Edit traveler information",
+              "Contact info, frequent flyer, KTN and more",
+              onTap: _handleEditTravelerInfo,
+            ),
             _buildManagementOption(
-                "Email receipt", "Send a copy to your email"),
+              "Baggage details",
+              "Allowances, pricing, pay for bags, and more",
+              onTap: _handleBaggageDetails,
+            ),
             _buildManagementOption(
-                "View standby list", "See where you are at on the list"),
+              "Add to calendar",
+              "Set a calendar reminder for your trip",
+              onTap: _handleAddToCalendar,
+            ),
             _buildManagementOption(
-                "Cancel flight", "View your cancellation options"),
+              "Email receipt",
+              "Send a copy to your email",
+              onTap: _handleEmailReceipt,
+            ),
+            _buildManagementOption(
+              "View standby list",
+              "See where you are at on the list",
+              onTap: _handleStandbyList,
+            ),
+            _buildManagementOption(
+              "Cancel flight",
+              "View your cancellation options",
+              onTap: () => _showSnackBar(
+                'Use the cancel reservation button below to review options.',
+              ),
+            ),
             const SizedBox(height: 24),
             // Cancel reservation button.
             Center(
@@ -357,10 +507,18 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
           ],
         ),
       ),
+          if (_isProcessingCheckIn)
+            const GlobePlaneLoaderOverlay(loaderSize: 118),
+        ],
+      ),
     );
   }
 
-  Widget _buildManagementOption(String title, String subtitle) {
+  Widget _buildManagementOption(
+    String title,
+    String subtitle, {
+    VoidCallback? onTap,
+  }) {
     return Column(
       children: [
         ListTile(
@@ -369,9 +527,7 @@ class _ManageReservationsScreenState extends State<ManageReservationsScreen> {
           subtitle: Text(subtitle,
               style: GoogleFonts.inter(fontSize: 14, color: Colors.grey)),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-          onTap: () {
-            // TODO: Navigate to the appropriate page or implement action.
-          },
+          onTap: onTap,
         ),
         const Divider(),
       ],

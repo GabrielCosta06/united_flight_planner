@@ -96,6 +96,14 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildAnimatedBottomNav() {
+    const navItems = [
+      {'icon': Icons.home, 'label': 'Home'},
+      {'icon': Icons.search, 'label': 'Search'},
+      {'icon': Icons.map, 'label': 'Trips'},
+      {'icon': Icons.local_airport, 'label': 'Status'},
+      {'icon': Icons.person, 'label': 'Account'},
+    ];
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -109,90 +117,93 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Stack(
-            children: [
-              // Sliding indicator
-              AnimatedBuilder(
-                animation: _slideAnimation,
-                builder: (context, _) {
-                  final containerWidth = MediaQuery.of(context).size.width - 16; // Account for padding
-                  final itemWidth = containerWidth / 5;
-                  return Positioned(
-                    left: 8 + (_slideAnimation.value * itemWidth),
-                    top: 4,
-                    bottom: 4,
-                    width: itemWidth,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primary.withValues(alpha: 0.15),
-                              AppColors.primaryLight.withValues(alpha: 0.08),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.12),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final itemWidth = constraints.maxWidth / navItems.length;
+
+              return Stack(
+                children: [
+                  AnimatedBuilder(
+                    animation: _slideAnimation,
+                    builder: (context, _) {
+                      final indicatorLeft = _slideAnimation.value * itemWidth;
+                      return Positioned(
+                        left: indicatorLeft,
+                        top: 2,
+                        bottom: 2,
+                        width: itemWidth,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 6),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.primary.withValues(alpha: 0.16),
+                                AppColors.primaryLight.withValues(alpha: 0.07),
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-              // Nav items
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(5, (index) {
-              final isSelected = _selectedIndex == index;
-              final items = [
-                {'icon': Icons.home, 'label': 'Home'},
-                {'icon': Icons.search, 'label': 'Search'},
-                {'icon': Icons.map, 'label': 'Trips'},
-                {'icon': Icons.local_airport, 'label': 'Status'},
-                {'icon': Icons.person, 'label': 'Account'},
-              ];
-              
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => _onBottomNavItemTapped(index),
-                  behavior: HitTestBehavior.opaque,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          items[index]['icon'] as IconData,
-                          color: isSelected ? AppColors.primary : Colors.grey.shade600,
-                          size: 26,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          items[index]['label'] as String,
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                            color: isSelected ? AppColors.primary : Colors.grey.shade600,
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: AppColors.primary.withValues(alpha: 0.28),
+                              width: 0.8,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary
+                                    .withValues(alpha: 0.12),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                ),
+                  Row(
+                    children: List.generate(navItems.length, (index) {
+                      final item = navItems[index];
+                      final isSelected = _selectedIndex == index;
+                      return SizedBox(
+                        width: itemWidth,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => _onBottomNavItemTapped(index),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                item['icon'] as IconData,
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : Colors.grey.shade600,
+                                size: 26,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                item['label'] as String,
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ],
               );
-            }),
-              ),
-            ],
+            },
           ),
         ),
       ),
@@ -339,14 +350,19 @@ class DashboardScreen extends StatefulWidget {
 class DashboardScreenState extends State<DashboardScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _loopController;
+  late final Animation<double> _loopAnimation;
 
   @override
   void initState() {
     super.initState();
     _loopController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat();
+      duration: const Duration(seconds: 6),
+    )..repeat(reverse: true);
+    _loopAnimation = CurvedAnimation(
+      parent: _loopController,
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -355,13 +371,449 @@ class DashboardScreenState extends State<DashboardScreen>
     super.dispose();
   }
 
+  Widget _buildHeroCard(
+    BuildContext context,
+    Employee employee,
+    Flight? nextFlight,
+    int upcomingCount,
+  ) {
+    final Flight? flight = nextFlight;
+
+    late final String routeLabel;
+    late final String timingLabel;
+    late final String seatLabel;
+
+    if (flight != null) {
+      routeLabel =
+          '${flight.originAirportCode} -> ${flight.destinationAirportCode}';
+      timingLabel =
+          DateFormat('EEE, MMM d at h:mm a').format(flight.departureTime);
+      seatLabel =
+          '${flight.availableSeats} open seats, ${flight.standbyCount} on standby';
+    } else {
+      routeLabel = 'Choose a route to get live seat updates';
+      timingLabel = 'See seat forecasts across the network';
+      seatLabel = 'Standby availability refreshes\nevery few minutes';
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(26),
+      child: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primaryDark.withValues(alpha: 0.95),
+                  AppColors.primary.withValues(alpha: 0.88),
+                  AppColors.accent.withValues(alpha: 0.75),
+                ],
+                stops: const [0.0, 0.58, 1.0],
+                begin: const Alignment(-0.8, -1),
+                end: const Alignment(0.9, 1),
+              ),
+              borderRadius: BorderRadius.circular(26),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primaryDark.withValues(alpha: 0.22),
+                  blurRadius: 20,
+                  offset: const Offset(0, 12),
+                ),
+                BoxShadow(
+                  color: AppColors.accent.withValues(alpha: 0.12),
+                  blurRadius: 36,
+                  offset: const Offset(0, 22),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  flight != null
+                      ? 'Your next standby chance'
+                      : 'Welcome back, ${_firstName(employee)}',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  routeLabel,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    color: Colors.white.withValues(alpha: 0.92),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  children: [
+                    Icon(Icons.schedule,
+                        color: Colors.white.withValues(alpha: 0.7)),
+                    Text(
+                      timingLabel,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  children: [
+                    Icon(Icons.event_seat,
+                        color: Colors.white.withValues(alpha: 0.7)),
+                    Text(
+                      seatLabel,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                if (flight != null) ...[
+                  AnimatedBuilder(
+                    animation: _loopAnimation,
+                    builder: (context, child) {
+                      final eased =
+                          Curves.easeInOut.transform(_loopAnimation.value);
+                      final pulse = 0.65 + 0.35 * eased;
+                      return Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        alignment: WrapAlignment.center,
+                        children: [
+                          _buildPulsingChip(
+                            icon: Icons.event_seat,
+                            label: '${flight.availableSeats} open seats',
+                            pulse: pulse,
+                          ),
+                          _buildPulsingChip(
+                            icon: Icons.groups,
+                            label: '${flight.standbyCount} standby',
+                            pulse: pulse * 0.8,
+                          ),
+                          if (flight.wifi)
+                            _buildPulsingChip(
+                              icon: Icons.wifi,
+                              label: 'Wi-Fi',
+                              pulse: pulse * 0.6,
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 18),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final width = constraints.maxWidth;
+                      return SizedBox(
+                        height: 80,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.white.withValues(alpha: 0.08),
+                                      Colors.white.withValues(alpha: 0.03),
+                                    ],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                            ),
+                            Positioned.fill(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: ShaderMask(
+                                  shaderCallback: (rect) => const RadialGradient(
+                                    colors: [
+                                      Color(0xFFFFFFFF),
+                                      Color(0x00FFFFFF),
+                                    ],
+                                    stops: [0.0, 1.0],
+                                    radius: 0.85,
+                                    center: Alignment(0.3, 0),
+                                  ).createShader(rect),
+                                  blendMode: BlendMode.softLight,
+                                  child: _buildHeroSheen(),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              left: 18,
+                              top: 14,
+                              bottom: 14,
+                              right: width * 0.45,
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 14),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.18),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Upgrade odds',
+                                      style: GoogleFonts.inter(
+                                        color:
+                                            Colors.white.withValues(alpha: 0.9),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            AppColors.accent
+                                                .withValues(alpha: 0.3),
+                                            AppColors.accent
+                                                .withValues(alpha: 0.6),
+                                          ],
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: Text(
+                                        '${math.min(95, 50 + upcomingCount * 8)}%',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              right: 18,
+                              top: 14,
+                              bottom: 14,
+                              left: width * 0.55,
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.16),
+                                  ),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.white.withValues(alpha: 0.14),
+                                      Colors.white.withValues(alpha: 0.08),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Recommended hop',
+                                      style: GoogleFonts.inter(
+                                        color:
+                                            Colors.white.withValues(alpha: 0.9),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      'Stop in ${flight.destinationAirportCode}',
+                                      style: GoogleFonts.inter(
+                                        color:
+                                            Colors.white.withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Seats increasing by ${math.max(3, flight.availableSeats)}%',
+                                      style: GoogleFonts.inter(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ] else ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.16),
+                      ),
+                      color: Colors.black.withValues(alpha: 0.2),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.auto_graph,
+                                color: Colors.white.withValues(alpha: 0.9),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Watch network trends',
+                                    style: GoogleFonts.inter(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.9),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'See where seats are opening across United hubs',
+                                    style: GoogleFonts.inter(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.7),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => OriginScreen(
+                                    currentEmployeeId: widget.employeeId),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.white.withValues(alpha: 0.15),
+                                  Colors.white.withValues(alpha: 0.1),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.location_searching,
+                                    color: Colors.white),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Scan standby network',
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        _buildSavedSegmentsBadge(upcomingCount),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Positioned(
+            right: -18,
+            top: -18,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0.35),
+                    Colors.white.withValues(alpha: 0.05),
+                  ],
+                  stops: const [0, 1],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Animated pill badge for "standby segments saved"
   Widget _buildSavedSegmentsBadge(int count) {
     return AnimatedBuilder(
-      animation: _loopController,
+      animation: _loopAnimation,
       builder: (context, _) {
-        final t = _loopController.value;
-        final shimmerAlpha = 0.15 + 0.10 * math.sin(2 * math.pi * t);
+        final wave = math.sin(2 * math.pi * _loopAnimation.value);
+        final shimmerAlpha = 0.12 + 0.08 * ((wave + 1) * 0.5);
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
@@ -419,9 +871,9 @@ class DashboardScreenState extends State<DashboardScreen>
   // Animated sheen overlay for the hero card
   Widget _buildHeroSheen() {
     return AnimatedBuilder(
-      animation: _loopController,
+      animation: _loopAnimation,
       builder: (context, _) {
-        final t = _loopController.value;
+        final t = _loopAnimation.value;
         return CustomPaint(
           painter: _SheenPainter(progress: t),
           size: Size.infinite,
@@ -474,24 +926,28 @@ class DashboardScreenState extends State<DashboardScreen>
           )
         : null;
 
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) => [
-        SliverAppBar(
-          automaticallyImplyLeading: false,
-          pinned: true,
-          expandedHeight: 120,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          flexibleSpace: LayoutBuilder(
-            builder: (context, constraints) {
-              // Calculate responsive sizes
-              final isCollapsed = constraints.biggest.height <= kToolbarHeight + MediaQuery.of(context).padding.top + 20;
-              final screenWidth = MediaQuery.of(context).size.width;
-              final isNarrow = screenWidth < 380;
-              
-              return FlexibleSpaceBar(
-                background: Stack(
-                  children: [
+    return ScrollConfiguration(
+      behavior: const MaterialScrollBehavior().copyWith(overscroll: false),
+      child: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            pinned: true,
+            expandedHeight: 104,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            flexibleSpace: LayoutBuilder(
+              builder: (context, constraints) {
+                final isCollapsed = constraints.biggest.height <=
+                    kToolbarHeight +
+                        MediaQuery.of(context).padding.top +
+                        20;
+                final screenWidth = MediaQuery.of(context).size.width;
+                final isNarrow = screenWidth < 380;
+
+                return FlexibleSpaceBar(
+                  background: Stack(
+                    children: [
                     // Main gradient background
                     Container(
                       decoration: BoxDecoration(
@@ -534,12 +990,12 @@ class DashboardScreenState extends State<DashboardScreen>
                     ),
                     // Animated shimmer overlay
                     AnimatedBuilder(
-                      animation: _loopController,
+                      animation: _loopAnimation,
                       builder: (context, _) {
                         return Positioned.fill(
                           child: CustomPaint(
                             painter: _HeaderShimmerPainter(
-                              progress: _loopController.value,
+                              progress: _loopAnimation.value,
                             ),
                           ),
                         );
@@ -548,146 +1004,150 @@ class DashboardScreenState extends State<DashboardScreen>
                     // Content on top of background
                     SafeArea(
                       child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isNarrow ? 12 : 20,
-                        vertical: 12,
-                      ),
-                      child: Row(
-                        children: [
-                          // Elevated profile avatar with glow
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.white.withValues(alpha: 0.3),
-                                  blurRadius: 12,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: CircleAvatar(
-                              radius: isNarrow ? 22 : 26,
-                              backgroundColor: Colors.white,
-                              child: Text(
-                                _initials(employee),
-                                style: GoogleFonts.inter(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: isNarrow ? 14 : 18,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isNarrow ? 12 : 20,
+                          vertical: 10,
+                        ),
+                        child: Row(
+                          children: [
+                            // Elevated profile avatar with glow
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.white.withValues(alpha: 0.3),
+                                    blurRadius: 12,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: CircleAvatar(
+                                radius: isNarrow ? 22 : 26,
+                                backgroundColor: Colors.white,
+                                child: Text(
+                                  _initials(employee),
+                                  style: GoogleFonts.inter(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: isNarrow ? 14 : 18,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: isNarrow ? 10 : 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  '${_greeting()}, ${_firstName(employee)}',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.inter(
-                                    fontSize: isNarrow ? 16 : 20,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                    height: 1.2,
+                            SizedBox(width: isNarrow ? 10 : 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '${_greeting()}, ${_firstName(employee)}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.inter(
+                                      fontSize: isNarrow ? 16 : 20,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      height: 1.2,
+                                    ),
                                   ),
-                                ),
-                                if (!isCollapsed) ...[
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.verified_user,
-                                        color: Colors.white.withValues(alpha: 0.9),
-                                        size: isNarrow ? 12 : 14,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Flexible(
-                                        child: Text(
-                                          'Verified • ${employee.employeeId}',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.inter(
-                                            fontSize: isNarrow ? 11 : 12,
-                                            color: Colors.white.withValues(alpha: 0.9),
-                                            fontWeight: FontWeight.w500,
+                                  if (!isCollapsed) ...[
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.verified_user,
+                                          color: Colors.white.withValues(alpha: 0.9),
+                                          size: isNarrow ? 12 : 14,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Flexible(
+                                          child: Text(
+                                            'Verified • ${employee.employeeId}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.inter(
+                                              fontSize: isNarrow ? 11 : 12,
+                                              color: Colors.white.withValues(alpha: 0.9),
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: isNarrow ? 6 : 8,
-                                      vertical: 3,
+                                      ],
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.25),
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                        color: Colors.white.withValues(alpha: 0.4),
-                                        width: 1,
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: isNarrow ? 6 : 8,
+                                        vertical: 3,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: 0.25),
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          color: Colors.white.withValues(alpha: 0.4),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'EMPLOYEE',
+                                        style: GoogleFonts.inter(
+                                          fontSize: isNarrow ? 8 : 9,
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.white,
+                                          letterSpacing: 0.5,
+                                        ),
                                       ),
                                     ),
-                                    child: Text(
-                                      'EMPLOYEE',
-                                      style: GoogleFonts.inter(
-                                        fontSize: isNarrow ? 8 : 9,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.white,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                  ),
+                                  ],
                                 ],
-                              ],
+                              ),
                             ),
-                          ),
-                          // Animated refresh button
-                          TweenAnimationBuilder<double>(
-                            tween: Tween(begin: 0, end: 1),
-                            duration: const Duration(seconds: 2),
-                            curve: Curves.easeInOut,
-                            builder: (context, value, child) {
-                              return Transform.scale(
-                                scale: 1.0 + (0.08 * (0.5 - (value - 0.5).abs()) * 2),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white.withValues(alpha: 0.15 + (0.05 * value)),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.white.withValues(alpha: 0.2),
-                                        blurRadius: 8,
-                                        spreadRadius: 1,
-                                      ),
-                                    ],
+                            // Animated refresh button
+                            TweenAnimationBuilder<double>(
+                              tween: Tween(begin: 0, end: 1),
+                              duration: const Duration(seconds: 2),
+                              curve: Curves.easeInOut,
+                              builder: (context, value, child) {
+                                return Transform.scale(
+                                  scale: 1.0 +
+                                      (0.08 * (0.5 - (value - 0.5).abs()) * 2),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white.withValues(
+                                          alpha: 0.15 + (0.05 * value)),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.white.withValues(alpha: 0.2),
+                                          blurRadius: 8,
+                                          spreadRadius: 1,
+                                        ),
+                                      ],
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(Icons.refresh_rounded),
+                                      tooltip: 'Refresh flights',
+                                      color: Colors.white,
+                                      iconSize: isNarrow ? 20 : 24,
+                                      padding:
+                                          EdgeInsets.all(isNarrow ? 8 : 12),
+                                      constraints: const BoxConstraints(),
+                                      onPressed: () {
+                                        widget.upcomingFlightsKey.currentState
+                                            ?.refreshFlights();
+                                        setState(() {});
+                                      },
+                                    ),
                                   ),
-                                  child: IconButton(
-                                    icon: const Icon(Icons.refresh_rounded),
-                                    tooltip: 'Refresh flights',
-                                    color: Colors.white,
-                                    iconSize: isNarrow ? 20 : 24,
-                                    padding: EdgeInsets.all(isNarrow ? 8 : 12),
-                                    constraints: const BoxConstraints(),
-                                    onPressed: () {
-                                      widget.upcomingFlightsKey.currentState?.refreshFlights();
-                                      setState(() {});
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                     ),
                   ],
                 ),
@@ -697,16 +1157,17 @@ class DashboardScreenState extends State<DashboardScreen>
         ),
       ],
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _animatedSection(
               delayMs: 0,
               child: AnimatedBuilder(
-                animation: _loopController,
+                animation: _loopAnimation,
                 builder: (context, child) {
-                  final float = math.sin(2 * math.pi * _loopController.value * 0.5) * 3;
+                  final wave = math.sin(2 * math.pi * _loopAnimation.value);
+                  final float = wave * 2.0;
                   return Transform.translate(
                     offset: Offset(0, float),
                     child: child,
@@ -720,7 +1181,7 @@ class DashboardScreenState extends State<DashboardScreen>
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             _animatedSection(
               delayMs: 100,
               child: _buildQuickStatsRow(
@@ -729,7 +1190,7 @@ class DashboardScreenState extends State<DashboardScreen>
                 openSeatsToday,
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 24),
             _animatedSection(
               delayMs: 200,
               child: Column(
@@ -740,7 +1201,7 @@ class DashboardScreenState extends State<DashboardScreen>
                     caption: 'Track your standby opportunities at a glance',
                     icon: Icons.flight_takeoff,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   UpcomingFlightsWidget(
                     key: widget.upcomingFlightsKey,
                     currentEmployeeId: widget.employeeId,
@@ -748,7 +1209,7 @@ class DashboardScreenState extends State<DashboardScreen>
                 ],
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 24),
             _animatedSection(
               delayMs: 300,
               child: LayoutBuilder(
@@ -800,210 +1261,8 @@ class DashboardScreenState extends State<DashboardScreen>
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildHeroCard(
-    BuildContext context,
-    Employee employee,
-  Flight? nextFlight,
-    int upcomingCount,
-  ) {
-    final bool hasUpcoming = nextFlight != null;
-    final String routeLabel = hasUpcoming
-        ? '${nextFlight.originAirportCode} → ${nextFlight.destinationAirportCode}'
-        : 'Choose a route to get live seat updates';
-    final String timingLabel = hasUpcoming
-        ? DateFormat('EEE, MMM d at h:mm a').format(nextFlight.departureTime)
-        : 'See seat forecasts across the network';
-    final String seatLabel = hasUpcoming
-        ? '${nextFlight.availableSeats} open seats, ${nextFlight.standbyCount} on standby'
-        : 'Standby availability refreshes\nevery few minutes';
-
-    return Stack(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            gradient: AppGradients.primaryVibrant,
-            borderRadius: BorderRadius.circular(28),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.25),
-                blurRadius: 24,
-                offset: const Offset(0, 12),
-              ),
-              BoxShadow(
-                color: AppColors.primaryLight.withValues(alpha: 0.1),
-                blurRadius: 40,
-                offset: const Offset(0, 20),
-              ),
-            ],
-          ),
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            hasUpcoming
-                ? 'Your next standby chance'
-                : 'Welcome back, ${_firstName(employee)}',
-            style: GoogleFonts.inter(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            routeLabel,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(
-              color: Colors.white.withValues(alpha: 0.92),
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(Icons.schedule, color: Colors.white.withValues(alpha: 0.7)),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  timingLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
-                    color: Colors.white.withValues(alpha: 0.8),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Icon(Icons.event_seat,
-                  color: Colors.white.withValues(alpha: 0.7)),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  seatLabel,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
-                    color: Colors.white.withValues(alpha: 0.8),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          if (hasUpcoming) ...[
-            AnimatedBuilder(
-              animation: _loopController,
-              builder: (context, child) {
-                final pulse = 0.5 + 0.5 * math.sin(2 * math.pi * _loopController.value * 0.7);
-                return Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _buildPulsingChip(
-                      icon: Icons.event_seat,
-                      label: '${nextFlight.availableSeats} open seats',
-                      pulse: pulse,
-                    ),
-                    _buildPulsingChip(
-                      icon: Icons.groups,
-                      label: '${nextFlight.standbyCount} standby',
-                      pulse: pulse * 0.8,
-                    ),
-                    if (nextFlight.wifi)
-                      _buildPulsingChip(
-                        icon: Icons.wifi,
-                        label: 'Wi‑Fi',
-                        pulse: pulse * 0.6,
-                      ),
-                  ],
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-          ],
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.list_alt, size: 18),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: BorderSide(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    width: 2,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          TripsScreen(currentEmployeeId: widget.employeeId),
-                    ),
-                  );
-                },
-                label: Text(
-                  hasUpcoming ? 'View standby list' : 'Explore standby routes',
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              OutlinedButton.icon(
-                icon: const Icon(Icons.add_circle_outline, size: 18),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: BorderSide(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    width: 2,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          OriginScreen(currentEmployeeId: widget.employeeId),
-                    ),
-                  );
-                },
-                label: Text(
-                  'Plan new trip',
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              _buildSavedSegmentsBadge(upcomingCount),
-            ],
-          ),
-        ],
-      ),
-        ),
-        Positioned.fill(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(28),
-            child: IgnorePointer(
-              child: _buildHeroSheen(),
-            ),
-          ),
-        ),
-      ],
-    );
+    ),
+  );
   }
 
   Widget _buildQuickStatsRow(
@@ -1089,92 +1348,94 @@ class DashboardScreenState extends State<DashboardScreen>
     required String value,
     String? caption,
   }) {
+    final phaseSeed = (icon.codePoint % 90) / 90.0;
     return AnimatedBuilder(
-      animation: _loopController,
+      animation: _loopAnimation,
       builder: (context, child) {
-        final pulse = 0.5 + 0.5 * math.sin(2 * math.pi * _loopController.value * 0.3 + icon.hashCode % 100);
-        return TweenAnimationBuilder<double>(
-          tween: Tween(begin: 1.0, end: 1.0),
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          builder: (context, scale, child) {
-            return MouseRegion(
-              onEnter: (_) {},
-              onExit: (_) {},
-              child: Transform.scale(
-                scale: scale,
-                child: child,
-              ),
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.08 + (0.02 * pulse)),
-                  AppColors.primaryLight.withValues(alpha: 0.04 + (0.01 * pulse)),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.12 + (0.03 * pulse)),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.04 + (0.02 * pulse)),
-                  blurRadius: 8 + (4 * pulse),
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
+        final base = _loopAnimation.value + phaseSeed;
+        final wave = math.sin(2 * math.pi * base);
+        final eased = Curves.easeInOut.transform((wave + 1) * 0.5);
+        final centered = eased - 0.5;
+        final scale = 1 + centered * 0.04;
+        final lift = centered * -6;
+        final pulse = 0.55 + 0.45 * eased;
+
+        return Transform.translate(
+          offset: Offset(0, lift),
+          child: Transform.scale(
+            scale: scale,
+            child: Container(
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.05 + (0.02 * pulse)),
+                    AppColors.accent.withValues(alpha: 0.05 + (0.015 * pulse)),
+                    AppColors.primaryLight.withValues(alpha: 0.03 + (0.01 * pulse)),
+                  ],
+                  stops: const [0.0, 0.6, 1.0],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.12 + (0.03 * pulse)),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.05 + (0.02 * pulse)),
+                    blurRadius: 10,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
-              child: Icon(icon, color: AppColors.primary, size: 24),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              value,
-              style: GoogleFonts.inter(
-                fontSize: 28,
-                fontWeight: FontWeight.w800,
-                color: AppColors.primary,
-                height: 1.2,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            if (caption != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                caption,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  color: Colors.grey.shade600,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(icon, color: AppColors.primary, size: 22),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      value,
+                      style: GoogleFonts.inter(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      label,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                        letterSpacing: -0.1,
+                      ),
+                    ),
+                    if (caption != null) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        caption,
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: Colors.grey.shade600,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
-            ],
-          ],
-        ),
-      ),
+            ),
           ),
         );
       },
@@ -1195,9 +1456,10 @@ class DashboardScreenState extends State<DashboardScreen>
               children: [
                 if (icon != null) ...[
                   AnimatedBuilder(
-                    animation: _loopController,
+                    animation: _loopAnimation,
                     builder: (context, _) {
-                      final double pulse = 0.5 + 0.5 * math.sin(2 * math.pi * _loopController.value);
+                      final double eased = Curves.easeInOut.transform(_loopAnimation.value);
+                      final double pulse = 0.6 + 0.4 * eased;
                       return Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -1205,8 +1467,8 @@ class DashboardScreenState extends State<DashboardScreen>
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.15 + 0.15 * pulse),
-                              blurRadius: 6 + 6 * pulse,
+                              color: AppColors.primary.withValues(alpha: 0.12 + 0.12 * pulse),
+                              blurRadius: 6 + 5 * pulse,
                               offset: const Offset(0, 2),
                             ),
                           ],
@@ -1257,71 +1519,114 @@ class DashboardScreenState extends State<DashboardScreen>
     required int openSeatsToday,
     required Flight? busiestFlight,
   }) {
-    return Card(
-      elevation: 0,
-      color: AppColors.primary.withValues(alpha: 0.03),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: AppColors.primary.withValues(alpha: 0.08),
-          width: 1,
+    return AnimatedBuilder(
+      animation: _loopAnimation,
+      builder: (context, child) {
+        final wave = math.sin(2 * math.pi * (_loopAnimation.value + 0.15)) * 1.5;
+        return Transform.translate(
+          offset: Offset(0, wave),
+          child: child,
+        );
+      },
+      child: Card(
+        elevation: 0,
+        color: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(
+            color: AppColors.primary.withValues(alpha: 0.08),
+            width: 1,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.dashboard_customize, color: AppColors.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Operational snapshot',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.07),
+                  AppColors.accent.withValues(alpha: 0.08),
+                  Colors.white.withValues(alpha: 0.9),
+                ],
+                stops: const [0.0, 0.55, 1.0],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.dashboard_customize,
+                          color: AppColors.primary, size: 22),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Operational snapshot',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildOperationalRow(
-              context: context,
-              icon: Icons.airlines,
-              label: '$openSeatsToday flights with open cabins today',
-              color: Colors.teal,
-            ),
-            const SizedBox(height: 12),
-            _buildOperationalRow(
-              context: context,
-              icon: Icons.groups,
-              label: '$standbyPassengers travelers waiting across the network',
-              color: Colors.orange,
-            ),
-            if (busiestFlight != null) ...[
-              const SizedBox(height: 12),
-              _buildOperationalRow(
-                context: context,
-                icon: Icons.local_fire_department,
-                label:
-                    'Busiest route: ${busiestFlight.originAirportCode} → ${busiestFlight.destinationAirportCode} — ${busiestFlight.standbyCount} standby',
-                color: Colors.redAccent,
+                  const SizedBox(height: 12),
+                  _buildOperationalRow(
+                    context: context,
+                    icon: Icons.airlines,
+                    label: '$openSeatsToday flights with open cabins today',
+                    color: Colors.teal,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildOperationalRow(
+                    context: context,
+                    icon: Icons.groups,
+                    label:
+                        '$standbyPassengers travelers waiting across the network',
+                    color: Colors.orange,
+                  ),
+                  if (busiestFlight != null) ...[
+                    const SizedBox(height: 10),
+                    _buildOperationalRow(
+                      context: context,
+                      icon: Icons.trending_up,
+                      label:
+                          'Busiest route: ${busiestFlight.originAirportCode} -> ${busiestFlight.destinationAirportCode} - ${busiestFlight.standbyCount} standby',
+                      color: Colors.redAccent,
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      _buildChipWithIcon(
+                        icon: Icons.wifi,
+                        label:
+                            '${openSeatsToday ~/ 2} flights with Wi-Fi available',
+                      ),
+                      _buildChipWithIcon(
+                        icon: Icons.access_time,
+                        label: 'Average connection time 58m',
+                      ),
+                      _buildChipWithIcon(
+                        icon: Icons.airplanemode_active,
+                        label: 'Standby velocity +12% vs last week',
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-            const SizedBox(height: 16),
-            Text(
-              'Status refreshes every five minutes to keep you ahead of the curve.',
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -1358,6 +1663,40 @@ class DashboardScreenState extends State<DashboardScreen>
     );
   }
 
+  Widget _buildChipWithIcon({
+    required IconData icon,
+    required String label,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary.withValues(alpha: 0.08),
+            AppColors.accent.withValues(alpha: 0.06),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: AppColors.primary),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCommunityCard(BuildContext context) {
     const highlights = [
       'Flight benefits refresher: priority cutover next Monday.',
@@ -1365,77 +1704,109 @@ class DashboardScreenState extends State<DashboardScreen>
       'Share your travel wins in the employee forum today.',
     ];
 
-    return Card(
-      elevation: 0,
-      color: AppColors.primary.withValues(alpha: 0.03),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: AppColors.primary.withValues(alpha: 0.08),
-          width: 1,
+    return AnimatedBuilder(
+      animation: _loopAnimation,
+      builder: (context, child) {
+        final wave = math.sin(2 * math.pi * (_loopAnimation.value + 0.25)) * 1.5;
+        return Transform.translate(
+          offset: Offset(0, wave),
+          child: child,
+        );
+      },
+      child: Card(
+        elevation: 0,
+        color: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(
+            color: AppColors.primary.withValues(alpha: 0.08),
+            width: 1,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.sentiment_satisfied_alt, color: AppColors.primary),
-                const SizedBox(width: 8),
-                Text(
-                  'Community highlights',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.94),
+                  AppColors.accent.withValues(alpha: 0.09),
+                  AppColors.primaryLight.withValues(alpha: 0.07),
+                ],
+                stops: const [0.0, 0.6, 1.0],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
-            const SizedBox(height: 16),
-            for (final item in highlights) ...[
-              Row(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    margin: const EdgeInsets.only(top: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                    ),
+                  Row(
+                    children: [
+                      Icon(Icons.sentiment_satisfied_alt,
+                          color: AppColors.primary, size: 22),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Community highlights',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      item,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: Colors.grey.shade700,
+                  const SizedBox(height: 12),
+                  for (final item in highlights) ...[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          margin: const EdgeInsets.only(top: 8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            item,
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              color: Colors.grey.shade700,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                TripsScreen(currentEmployeeId: widget.employeeId),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Browse all updates',
+                        style: GoogleFonts.inter(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-            ],
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        TripsScreen(currentEmployeeId: widget.employeeId),
-                  ),
-                );
-              },
-              child: Text(
-                'Browse all updates',
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-              ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -1444,80 +1815,96 @@ class DashboardScreenState extends State<DashboardScreen>
   Widget _buildQuickActionBar(BuildContext context) {
     return Card(
       elevation: 0,
-      color: AppColors.primary.withValues(alpha: 0.05),
+      color: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            // Determine columns responsively
-            final double maxW = constraints.maxWidth;
-            final int columns = maxW < 480
-                ? 1
-                : (maxW < 760
-                    ? 2
-                    : 3);
-            const double spacing = 12;
-            final double tileWidth = (maxW - spacing * (columns - 1)) / columns;
-
-            return Wrap(
-              spacing: spacing,
-              runSpacing: spacing,
-              children: [
-                SizedBox(
-                  width: tileWidth,
-                  child: _buildActionButton(
-                    context: context,
-                    icon: Icons.search,
-                    title: 'Search flights',
-                    caption: 'Find routes and forecast seats',
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              OriginScreen(currentEmployeeId: widget.employeeId),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(
-                  width: tileWidth,
-                  child: _buildActionButton(
-                    context: context,
-                    icon: Icons.list_alt,
-                    title: 'View trips',
-                    caption: 'Your saved standby segments',
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              TripsScreen(currentEmployeeId: widget.employeeId),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(
-                  width: tileWidth,
-                  child: _buildActionButton(
-                    context: context,
-                    icon: Icons.person,
-                    title: 'My profile',
-                    caption: 'Account and preferences',
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              AccountScreen(currentEmployeeId: widget.employeeId),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.white.withValues(alpha: 0.95),
+                AppColors.primaryLight.withValues(alpha: 0.08),
+                AppColors.accent.withValues(alpha: 0.07),
               ],
-            );
-          },
+              stops: const [0.0, 0.55, 1.0],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Determine columns responsively
+                final double maxW = constraints.maxWidth;
+                final int columns = maxW < 480
+                    ? 1
+                    : (maxW < 760 ? 2 : 3);
+                const double spacing = 12;
+                final double tileWidth =
+                    (maxW - spacing * (columns - 1)) / columns;
+
+                return Wrap(
+                  spacing: spacing,
+                  runSpacing: spacing,
+                  children: [
+                    SizedBox(
+                      width: tileWidth,
+                      child: _buildActionButton(
+                        context: context,
+                        icon: Icons.search,
+                        title: 'Search flights',
+                        caption: 'Find routes and forecast seats',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => OriginScreen(
+                                  currentEmployeeId: widget.employeeId),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: tileWidth,
+                      child: _buildActionButton(
+                        context: context,
+                        icon: Icons.list_alt,
+                        title: 'View trips',
+                        caption: 'Your saved standby segments',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => TripsScreen(
+                                  currentEmployeeId: widget.employeeId),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: tileWidth,
+                      child: _buildActionButton(
+                        context: context,
+                        icon: Icons.person,
+                        title: 'My profile',
+                        caption: 'Account and preferences',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => AccountScreen(
+                                  currentEmployeeId: widget.employeeId),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
@@ -1530,73 +1917,99 @@ class DashboardScreenState extends State<DashboardScreen>
     String? caption,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Ink(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.white,
-              AppColors.primaryLight.withValues(alpha: 0.05),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+    final phase = (icon.codePoint % 150) / 150.0;
+    return AnimatedBuilder(
+      animation: _loopAnimation,
+      builder: (context, child) {
+        final wave =
+            math.sin(2 * math.pi * (_loopAnimation.value + phase));
+        final scale = 1 + wave * 0.01;
+        return Transform.translate(
+          offset: Offset(0, wave * -1.6),
+          child: Transform.scale(scale: scale, child: child),
+        );
+      },
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.white.withValues(alpha: 0.98),
+                AppColors.primaryLight.withValues(alpha: 0.08),
+                AppColors.accent.withValues(alpha: 0.05),
+              ],
+              stops: const [0.0, 0.6, 1.0],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: AppColors.primary),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
               ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+              BoxShadow(
+                color: AppColors.accent.withValues(alpha: 0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
               ),
-              if (caption != null) ...[
-                const SizedBox(height: 4),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.18),
+                        AppColors.accent.withValues(alpha: 0.12),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: AppColors.primary, size: 22),
+                ),
+                const SizedBox(height: 10),
                 Text(
-                  caption,
-                  maxLines: 2,
+                  title,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: Colors.grey.shade700,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
                   ),
                 ),
-              ],
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Icon(Icons.arrow_forward, color: AppColors.primary, size: 18),
+                if (caption != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    caption,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
                 ],
-              ),
-            ],
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Icon(Icons.arrow_outward,
+                      color: AppColors.primary, size: 18),
+                ),
+              ],
+            ),
           ),
         ),
       ),

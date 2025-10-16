@@ -5,6 +5,7 @@ import '../core/app_theme.dart';
 import '../widgets/background.dart';
 import 'auth_service.dart';
 import 'main_page.dart';
+import '../widgets/globe_plane_loader.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login';
@@ -233,14 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             // Display the loading overlay when _isLoading is true.
             if (_isLoading)
-              Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: Colors.black.withValues(alpha: 0.2),
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
+              const GlobePlaneLoaderOverlay(),
           ],
         ),
       ),
