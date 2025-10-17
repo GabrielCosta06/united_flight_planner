@@ -243,64 +243,16 @@ class DashboardScreenState extends State<DashboardScreen> {
             SectionHeader(
               title: 'Upcoming Flights',
               icon: Icons.flight,
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => FlightListScreen(
-                            origin: '',
-                            flightType: 'Domestic',
-                            destination: '',
-                            departureDate: DateTime.now(),
-                            stops: 'Any',
-                            tripType: 'One-way',
-                            travelAdvisories: '',
-                            employeeNotes: [],
-                            currentEmployeeId: widget.employeeId,
-                            filterOpenSeats: true,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Flights with open seats',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+              upcomingCount: upcomingCount,
+              onViewAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        TripsScreen(currentEmployeeId: widget.employeeId),
                   ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '$upcomingCount',
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
             const SizedBox(height: 12),
             // Use the upcomingFlightsKey to build the UpcomingFlightsWidget.
@@ -375,8 +327,16 @@ class DashboardScreenState extends State<DashboardScreen> {
 class SectionHeader extends StatelessWidget {
   final String title;
   final IconData? icon;
-  final Widget? trailing;
-  const SectionHeader({super.key, required this.title, this.icon, this.trailing});
+  final int? upcomingCount;
+  final VoidCallback? onViewAll;
+
+  const SectionHeader({
+    super.key,
+    required this.title,
+    this.icon,
+    this.upcomingCount,
+    this.onViewAll,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -384,27 +344,68 @@ class SectionHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (icon != null) Icon(icon, color: AppColors.primary),
-              if (icon != null) const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  title,
-                  style: GoogleFonts.inter(
-                    textStyle: Theme.of(context).textTheme.titleMedium,
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
+              Row(
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, color: AppColors.primary),
+                    const SizedBox(width: 16),
+                  ],
+                  Text(
+                    title,
+                    style: GoogleFonts.inter(
+                      textStyle: Theme.of(context).textTheme.titleMedium,
+                      color: Colors.black87,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
+                ],
               ),
-              if (trailing != null) trailing!,
+              Row(
+                children: [
+                  if (upcomingCount != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '$upcomingCount',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  if (onViewAll != null) ...[
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: onViewAll,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          'View All',
+                          style: GoogleFonts.inter(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ],
           ),
         ),
-        Divider(color: const Color.fromARGB(255, 207, 207, 207), thickness: 2),
+        const Divider(color: Color.fromARGB(255, 207, 207, 207), thickness: 2),
       ],
     );
   }
