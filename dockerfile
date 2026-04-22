@@ -1,5 +1,5 @@
 # === Stage 1: Build the Flutter web app ===
-FROM ghcr.io/cirruslabs/flutter:3.27.3 AS builder
+FROM ghcr.io/cirruslabs/flutter:3.41.7 AS builder
 
 # Set working directory
 WORKDIR /app
@@ -7,14 +7,12 @@ WORKDIR /app
 # Copy all files into the container
 COPY . .
 
-
 # Enable web support (if not already enabled) and fetch dependencies
 RUN flutter config --enable-web
 RUN flutter pub get
 
 # Build the Flutter web app in release mode
 RUN flutter build web --release
-
 
 # === Stage 2: Serve the built app using Nginx ===
 FROM nginx:alpine
