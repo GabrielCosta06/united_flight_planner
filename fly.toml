@@ -1,34 +1,23 @@
-# fly.toml app configuration file generated for flight-planner on 2025-03-23T20:11:10-03:00
+# fly.toml app configuration file generated for united-flight-planner on 2026-04-22T14:40:28Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'flight-planner'
-primary_region = 'gig'
+app = 'united-flight-planner'
+primary_region = 'gru'
 
 [build]
 
 [http_service]
-  internal_port = 80
+  internal_port = 8080
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
 
-[[services]]
-  protocol = 'tcp'
-  internal_port = 80
-
-  [[services.ports]]
-    port = 80
-    handlers = ['http']
-
-  [[services.ports]]
-    port = 443
-    handlers = ['tls', 'http']
-
 [[vm]]
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
+  memory_mb = 1024
