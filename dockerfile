@@ -23,8 +23,8 @@ RUN rm -rf /usr/share/nginx/html/*
 # Copy the compiled Flutter web build from the builder stage
 COPY --from=builder /app/build/web /usr/share/nginx/html
 
-# Expose port 80 to serve the app
-EXPOSE 80
+# Expose port 8080 to serve the app
+EXPOSE 8080
 
 # Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
