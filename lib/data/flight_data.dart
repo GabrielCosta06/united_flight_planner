@@ -1,3 +1,6 @@
+import 'dart:collection';
+import 'dart:math' as math;
+
 import '../models/flight.dart';
 
 /// Represents an airport with a name and its corresponding code.
@@ -6,6 +9,137 @@ class Airport {
   final String code;
   const Airport({required this.name, required this.code});
 }
+
+class _AirportProfile {
+  final String name;
+  final String code;
+  final String city;
+  final String country;
+  final bool isUnitedHub;
+  final double latitude;
+  final double longitude;
+
+  const _AirportProfile({
+    required this.name,
+    required this.code,
+    required this.city,
+    required this.country,
+    required this.isUnitedHub,
+    required this.latitude,
+    required this.longitude,
+  });
+}
+
+const List<_AirportProfile> _airportProfiles = [
+  _AirportProfile(
+    name: 'JFK International',
+    code: 'JFK',
+    city: 'New York',
+    country: 'United States',
+    isUnitedHub: false,
+    latitude: 40.6413,
+    longitude: -73.7781,
+  ),
+  _AirportProfile(
+    name: 'LAX International',
+    code: 'LAX',
+    city: 'Los Angeles',
+    country: 'United States',
+    isUnitedHub: true,
+    latitude: 33.9416,
+    longitude: -118.4085,
+  ),
+  _AirportProfile(
+    name: 'Denver International Airport',
+    code: 'DEN',
+    city: 'Denver',
+    country: 'United States',
+    isUnitedHub: true,
+    latitude: 39.8561,
+    longitude: -104.6737,
+  ),
+  _AirportProfile(
+    name: 'Chicago O\'Hare',
+    code: 'ORD',
+    city: 'Chicago',
+    country: 'United States',
+    isUnitedHub: true,
+    latitude: 41.9742,
+    longitude: -87.9073,
+  ),
+  _AirportProfile(
+    name: 'Houston Intercontinental Airport',
+    code: 'IAH',
+    city: 'Houston',
+    country: 'United States',
+    isUnitedHub: true,
+    latitude: 29.9902,
+    longitude: -95.3368,
+  ),
+  _AirportProfile(
+    name: 'Newark Liberty International Airport',
+    code: 'EWR',
+    city: 'Newark',
+    country: 'United States',
+    isUnitedHub: true,
+    latitude: 40.6895,
+    longitude: -74.1745,
+  ),
+  _AirportProfile(
+    name: 'San Francisco International Airport',
+    code: 'SFO',
+    city: 'San Francisco',
+    country: 'United States',
+    isUnitedHub: true,
+    latitude: 37.6213,
+    longitude: -122.3790,
+  ),
+  _AirportProfile(
+    name: 'Washington Dulles International Airport',
+    code: 'IAD',
+    city: 'Washington',
+    country: 'United States',
+    isUnitedHub: true,
+    latitude: 38.9531,
+    longitude: -77.4565,
+  ),
+  _AirportProfile(
+    name: 'Antonio B. Won Pat International Airport',
+    code: 'GUM',
+    city: 'Guam',
+    country: 'United States',
+    isUnitedHub: true,
+    latitude: 13.4839,
+    longitude: 144.7970,
+  ),
+  _AirportProfile(
+    name: 'Heathrow',
+    code: 'LHR',
+    city: 'London',
+    country: 'United Kingdom',
+    isUnitedHub: false,
+    latitude: 51.4700,
+    longitude: -0.4543,
+  ),
+  _AirportProfile(
+    name: 'Charles de Gaulle',
+    code: 'CDG',
+    city: 'Paris',
+    country: 'France',
+    isUnitedHub: false,
+    latitude: 49.0097,
+    longitude: 2.5479,
+  ),
+  _AirportProfile(
+    name: 'Frankfurt International',
+    code: 'FRA',
+    city: 'Frankfurt',
+    country: 'Germany',
+    isUnitedHub: false,
+    latitude: 50.0379,
+    longitude: 8.5622,
+  ),
+];
 
 /// List of all airports.
 const List<Airport> airportList = [
@@ -62,7 +196,6 @@ FlightType parseFlightType(String flightTypeString) {
   } else if (normalized == 'international') {
     return FlightType.international;
   } else {
-    // default to Domestic if unknown
     return FlightType.domestic;
   }
 }
@@ -70,925 +203,533 @@ FlightType parseFlightType(String flightTypeString) {
 /// Generates a flight key using the origin, destination, and flight type.
 /// The format is "originCode-destinationCode-flightType".
 String generateFlightKey(
-    String origin, String destination, FlightType flightType) {
+  String origin,
+  String destination,
+  FlightType flightType,
+) {
   final originCode = airportCodes[origin] ?? origin;
   final destinationCode = airportCodes[destination] ?? destination;
   return '$originCode-$destinationCode-${flightTypeToString(flightType)}';
 }
 
+final DateTime scheduleStartDate = _dateOnly(DateTime.now());
+final DateTime scheduleEndDate = DateTime(scheduleStartDate.year, 12, 31);
+
 /// Fake flights database keyed by "originCode-destinationCode-flightType".
-final Map<String, List<Flight>> fakeFlights = {
-  // Merged flights for Newark Liberty International Airport -> Houston Intercontinental Airport (Domestic)
-  generateFlightKey('Newark Liberty International Airport',
-      'Houston Intercontinental Airport', FlightType.domestic): [
-    // Flight UA101: Nonstop with Wi-Fi, using Boeing 737-900.
-    Flight(
-      originCity: 'Newark',
-      destinationCity: 'Houston',
-      flightNumber: 'UA101',
-      aircraft: 'Boeing 737-900',
-      prices: {
-        'United First': 1200,
-        'United Economy': 300,
-      },
-      seats: {
-        'United First': 20,
-        'United Economy': 117,
-      },
-      confirmedPassengers: {
-        'United First': [
-          'UF1',
-          'UF2',
-          'UF3',
-          'UF4',
-          'UF5',
-          'UF6',
-          'UF7',
-          'UF8',
-          'UF9',
-          'UF10'
-        ],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8',
-          'UE9',
-          'UE10',
-          'UE11',
-          'UE12',
-          'UE13',
-          'UE14',
-          'UE15',
-          'UE16',
-          'UE17',
-          'UE18',
-          'UE19',
-          'UE20',
-          'UE21',
-          'UE22',
-          'UE23',
-          'UE24',
-          'UE25',
-          'UE26',
-          'UE27',
-          'UE28',
-          'UE29',
-          'UE30',
-          'UE31',
-          'UE32',
-          'UE33',
-          'UE34',
-          'UE35',
-          'UE36',
-          'UE37',
-          'UE38',
-          'UE39',
-          'UE40'
-        ],
-      },
-      standbyPassengers: {
-        'United First': [
-          NonRevPassenger(id: 'NR1', name: 'Alice Barber', priority: 'PS0E'),
-          NonRevPassenger(id: 'NR2', name: 'Bob Diana', priority: 'SA1P'),
-        ],
-        'United Economy': [
-          NonRevPassenger(id: 'NR1', name: 'Charlie', priority: 'PS0E'),
-          NonRevPassenger(id: 'NR2', name: 'Diana', priority: 'SA1P'),
-        ],
-      },
-      checkedInPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3', 'UF4', 'UF5'],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8'
-        ],
-      },
-      departureTime: DateTime(2025, 4, 15, 8, 0),
-      arrivalTime: DateTime(2025, 4, 15, 11, 0),
-      origin: 'Newark Liberty International Airport',
-      destination: 'Houston Intercontinental Airport',
-      originAirportCode: airportCodes['Newark Liberty International Airport']!,
-      destinationAirportCode: airportCodes['Houston Intercontinental Airport']!,
-      availableSeats: 87,
-      standbyCount: 4,
-      stops: 'Nonstop',
-      connectionDuration: null,
-      connectionDetails: null,
-      wifi: true,
-      connectingPassengerIds: ['UF3', 'UF6'],
+///
+/// The route lists are generated lazily and deterministically from
+/// [scheduleStartDate] through [scheduleEndDate], so every supported route has
+/// realistic-looking service on every remaining day of the year.
+final Map<String, List<Flight>> fakeFlights = _GeneratedFlightMap();
+
+class _RouteTemplate {
+  final _AirportProfile origin;
+  final _AirportProfile destination;
+  final FlightType flightType;
+  final int routeIndex;
+
+  const _RouteTemplate({
+    required this.origin,
+    required this.destination,
+    required this.flightType,
+    required this.routeIndex,
+  });
+}
+
+class _GeneratedFlightMap extends MapBase<String, List<Flight>> {
+  final Map<String, List<Flight>> _cache = {};
+
+  @override
+  Iterable<String> get keys => _routeTemplates.keys;
+
+  @override
+  List<Flight>? operator [](Object? key) {
+    if (key is! String || !_routeTemplates.containsKey(key)) {
+      return null;
+    }
+    return _cache.putIfAbsent(
+      key,
+      () => _generateFlightsForRoute(_routeTemplates[key]!),
+    );
+  }
+
+  @override
+  void operator []=(String key, List<Flight> value) {
+    _cache[key] = value;
+  }
+
+  @override
+  void clear() => _cache.clear();
+
+  @override
+  List<Flight>? remove(Object? key) {
+    if (key is String) {
+      return _cache.remove(key);
+    }
+    return null;
+  }
+}
+
+final Map<String, _RouteTemplate> _routeTemplates = _buildRouteTemplates();
+
+Map<String, _RouteTemplate> _buildRouteTemplates() {
+  final templates = <String, _RouteTemplate>{};
+  var routeIndex = 0;
+  for (final origin in _airportProfiles) {
+    for (final destination in _airportProfiles) {
+      if (origin.code == destination.code) continue;
+      final flightType = _routeFlightType(origin, destination);
+      final key = generateFlightKey(origin.name, destination.name, flightType);
+      templates[key] = _RouteTemplate(
+        origin: origin,
+        destination: destination,
+        flightType: flightType,
+        routeIndex: routeIndex++,
+      );
+    }
+  }
+  return templates;
+}
+
+FlightType _routeFlightType(
+  _AirportProfile origin,
+  _AirportProfile destination,
+) {
+  final isDomestic =
+      origin.country == 'United States' &&
+      destination.country == 'United States';
+  return isDomestic ? FlightType.domestic : FlightType.international;
+}
+
+List<Flight> _generateFlightsForRoute(_RouteTemplate route) {
+  final flights = <Flight>[];
+  final miles = _distanceMiles(route.origin, route.destination);
+  final frequency = _dailyFrequency(route, miles);
+  var date = scheduleStartDate;
+
+  while (!date.isAfter(scheduleEndDate)) {
+    for (var sequence = 0; sequence < frequency; sequence++) {
+      flights.add(_generateFlight(route, date, sequence, frequency, miles));
+    }
+    date = date.add(const Duration(days: 1));
+  }
+
+  flights.sort((a, b) => a.departureTime.compareTo(b.departureTime));
+  return flights;
+}
+
+Flight _generateFlight(
+  _RouteTemplate route,
+  DateTime date,
+  int sequence,
+  int dailyFrequency,
+  double miles,
+) {
+  final seed = _stableHash(
+    '${route.origin.code}-${route.destination.code}-${date.toIso8601String()}-$sequence',
+  );
+  final random = math.Random(seed);
+  final departureMinute = _departureMinuteFor(route, sequence, dailyFrequency);
+  final departureTime = DateTime(
+    date.year,
+    date.month,
+    date.day,
+    departureMinute ~/ 60,
+    departureMinute % 60,
+  );
+  final blockMinutes = _blockMinutes(route.flightType, miles);
+  final arrivalTime = departureTime.add(Duration(minutes: blockMinutes));
+  final aircraft = _aircraftFor(route.flightType, miles, sequence, seed);
+  final seats = _seatLayoutFor(aircraft);
+  final loadFactor = _loadFactor(date, route.flightType, seed, sequence);
+  final confirmedPassengers = _confirmedPassengers(seats, loadFactor, random);
+  final checkedInPassengers = _checkedInPassengers(
+    confirmedPassengers,
+    departureTime,
+    random,
+  );
+  final standbyPassengers = _standbyPassengers(
+    seats.keys.toList(),
+    loadFactor,
+    random,
+  );
+  final totalSeats = seats.values.fold<int>(0, (sum, count) => sum + count);
+  final bookedSeats = confirmedPassengers.values.fold<int>(
+    0,
+    (sum, passengers) => sum + passengers.length,
+  );
+  final standbyCount = standbyPassengers.values.fold<int>(
+    0,
+    (sum, passengers) => sum + passengers.length,
+  );
+  final isConnection = sequence == dailyFrequency - 1 && dailyFrequency > 1;
+  final connectionAirport = isConnection ? _connectionAirport(route) : null;
+
+  return Flight(
+    originCity: route.origin.city,
+    destinationCity: route.destination.city,
+    flightNumber: _flightNumberFor(route.routeIndex, sequence),
+    aircraft: aircraft,
+    prices: _pricesFor(route.flightType, miles, seats.keys, loadFactor),
+    seats: seats,
+    confirmedPassengers: confirmedPassengers,
+    standbyPassengers: standbyPassengers,
+    checkedInPassengers: checkedInPassengers,
+    departureTime: departureTime,
+    arrivalTime: arrivalTime,
+    origin: route.origin.name,
+    destination: route.destination.name,
+    originAirportCode: route.origin.code,
+    destinationAirportCode: route.destination.code,
+    availableSeats: math.max(0, totalSeats - bookedSeats),
+    standbyCount: standbyCount,
+    stops: isConnection ? '1 Stop' : 'Nonstop',
+    connectionDuration: isConnection
+        ? Duration(minutes: 45 + random.nextInt(55))
+        : null,
+    connectionDetails: connectionAirport == null
+        ? null
+        : 'Layover at ${connectionAirport.code} for ${45 + random.nextInt(55)} min',
+    wifi: random.nextDouble() > 0.08,
+    connectingPassengerIds: _connectingPassengerIds(
+      confirmedPassengers,
+      random,
     ),
-    // Flight UA102: 1-stop without Wi-Fi, using Boeing 737-900.
-    Flight(
-      flightNumber: 'UA102',
-      aircraft: 'Boeing 737-900',
-      prices: {
-        'United First': 1300,
-        'United Economy': 320,
-      },
-      seats: {
-        'United First': 20,
-        'United Economy': 117,
-      },
-      confirmedPassengers: {
-        'United First': [
-          'UF1',
-          'UF2',
-          'UF3',
-          'UF4',
-          'UF5',
-          'UF6',
-          'UF7',
-          'UF8'
-        ],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8',
-          'UE9',
-          'UE10',
-          'UE11',
-          'UE12',
-          'UE13',
-          'UE14',
-          'UE15',
-          'UE16',
-          'UE17',
-          'UE18',
-          'UE19',
-          'UE20'
-        ],
-      },
-      standbyPassengers: {
-        'United First': [
-          NonRevPassenger(id: 'NR1', name: 'Eve', priority: 'PS0E'),
-        ],
-        'United Economy': [
-          NonRevPassenger(id: 'NR1', name: 'Frank', priority: 'SA1P'),
-        ],
-      },
-      checkedInPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3'],
-        'United Economy': ['UE1', 'UE2', 'UE3'],
-      },
-      departureTime: DateTime(2025, 4, 15, 9, 0),
-      arrivalTime: DateTime(2025, 4, 15, 13, 0),
-      origin: 'Newark Liberty International Airport',
-      destination: 'Houston Intercontinental Airport',
-      originAirportCode: airportCodes['Newark Liberty International Airport']!,
-      destinationAirportCode: airportCodes['Houston Intercontinental Airport']!,
-      availableSeats: 109,
-      standbyCount: 2,
-      stops: '1 Stop',
-      connectionDuration: const Duration(minutes: 45),
-      connectionDetails: 'Layover at ORD for 45 min',
-      wifi: false,
-      connectingPassengerIds: ['UF2', 'UF4'],
-    ),
-    // Flight UA103: Nonstop with Wi-Fi, using Boeing 737-900.
-    Flight(
-      originCity: 'Newark',
-      destinationCity: 'Houston',
-      flightNumber: 'UA103',
-      aircraft: 'Boeing 737-900',
-      prices: {
-        'United First': 1200,
-        'United Economy': 300,
-      },
-      seats: {
-        'United First': 20,
-        'United Economy': 117,
-      },
-      confirmedPassengers: {
-        'United First': [
-          'UF1',
-          'UF2',
-          'UF3',
-          'UF4',
-          'UF5',
-          'UF6',
-          'UF7',
-          'UF8',
-          'UF9',
-          'UF10'
-        ],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8',
-          'UE9',
-          'UE10',
-          'UE11',
-          'UE12',
-          'UE13',
-          'UE14',
-          'UE15',
-          'UE16',
-          'UE17',
-          'UE18',
-          'UE19',
-          'UE20',
-          'UE21',
-          'UE22',
-          'UE23',
-          'UE24',
-          'UE25',
-          'UE26',
-          'UE27',
-          'UE28',
-          'UE29',
-          'UE30',
-          'UE31',
-          'UE32',
-          'UE33',
-          'UE34',
-          'UE35',
-          'UE36',
-          'UE37',
-          'UE38',
-          'UE39',
-          'UE40'
-        ],
-      },
-      standbyPassengers: {
-        'United First': [
-          NonRevPassenger(id: 'NR1', name: 'Alice Barber', priority: 'PS0E'),
-          NonRevPassenger(id: 'NR2', name: 'Bob Diana', priority: 'SA1P'),
-        ],
-        'United Economy': [
-          NonRevPassenger(id: 'NR1', name: 'Charlie', priority: 'PS0E'),
-          NonRevPassenger(id: 'NR2', name: 'Diana', priority: 'SA1P'),
-        ],
-      },
-      checkedInPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3', 'UF4', 'UF5'],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8',
-        ],
-      },
-      departureTime: DateTime(2025, 4, 15, 8, 0),
-      arrivalTime: DateTime(2025, 4, 15, 11, 0),
-      origin: 'Newark Liberty International Airport',
-      destination: 'Houston Intercontinental Airport',
-      originAirportCode: airportCodes['Newark Liberty International Airport']!,
-      destinationAirportCode: airportCodes['Houston Intercontinental Airport']!,
-      availableSeats: 30,
-      standbyCount: 4,
-      stops: 'Nonstop',
-      connectionDuration: null,
-      connectionDetails: null,
-      wifi: true,
-      connectingPassengerIds: ['UF3', 'UF6'],
-    ),
-    // Flight UA104: Duplicated UA103 with additional passengers.
-    Flight(
-      originCity: 'Newark',
-      destinationCity: 'Houston',
-      flightNumber: 'UA104',
-      aircraft: 'Boeing 737-900',
-      prices: {
-        'United First': 1200,
-        'United Economy': 300,
-      },
-      seats: {
-        'United First': 20,
-        'United Economy': 117,
-      },
-      confirmedPassengers: {
-        'United First': [
-          'UF1',
-          'UF2',
-          'UF3',
-          'UF4',
-          'UF5',
-          'UF6',
-          'UF7',
-          'UF8',
-          'UF9',
-          'UF10',
-          'UF11',
-          'UF12',
-          'UF13',
-          'UF14',
-          'UF15',
-          'UF16',
-          'UF17',
-          'UF18',
-          'UF19',
-          'UF20'
-        ],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8',
-          'UE9',
-          'UE10',
-          'UE11',
-          'UE12',
-          'UE13',
-          'UE14',
-          'UE15',
-          'UE16',
-          'UE17',
-          'UE18',
-          'UE19',
-          'UE20',
-          'UE21',
-          'UE22',
-          'UE23',
-          'UE24',
-          'UE25',
-          'UE26',
-          'UE27',
-          'UE28',
-          'UE29',
-          'UE30',
-          'UE31',
-          'UE32',
-          'UE33',
-          'UE34',
-          'UE35',
-          'UE36',
-          'UE37',
-          'UE38',
-          'UE39',
-          'UE40',
-          'UE41',
-          'UE42',
-          'UE43',
-          'UE44',
-          'UE45',
-          'UE46',
-          'UE47',
-          'UE48',
-          'UE49',
-          'UE50',
-          'UE51',
-          'UE52',
-          'UE53',
-          'UE54',
-          'UE55',
-          'UE56',
-          'UE57',
-          'UE58',
-          'UE59',
-          'UE60',
-          'UE61',
-          'UE62',
-          'UE63',
-          'UE64',
-          'UE65',
-          'UE66',
-          'UE67',
-          'UE68',
-          'UE69',
-          'UE70',
-          'UE71',
-          'UE72',
-          'UE73',
-          'UE74',
-          'UE75',
-          'UE76',
-          'UE77',
-          'UE78',
-          'UE79',
-          'UE80',
-          'UE81',
-          'UE82',
-          'UE83',
-          'UE84',
-          'UE85',
-          'UE86',
-          'UE87',
-          'UE88',
-          'UE89',
-          'UE90',
-          'UE91',
-          'UE92',
-          'UE93',
-          'UE94',
-          'UE95',
-          'UE96',
-          'UE97',
-        ],
-      },
-      standbyPassengers: {
-        'United First': [
-          NonRevPassenger(id: 'NR1', name: 'Alice Barber', priority: 'PS0E'),
-          NonRevPassenger(id: 'NR2', name: 'Bob Diana', priority: 'SA1P'),
-        ],
-        'United Economy': [
-          NonRevPassenger(id: 'NR1', name: 'Charlie', priority: 'PS0E'),
-          NonRevPassenger(id: 'NR2', name: 'Diana', priority: 'SA1P'),
-        ],
-      },
-      checkedInPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3', 'UF4', 'UF5'],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8',
-        ],
-      },
-      departureTime: DateTime(2025, 4, 15, 8, 0),
-      arrivalTime: DateTime(2025, 4, 15, 11, 0),
-      origin: 'Newark Liberty International Airport',
-      destination: 'Houston Intercontinental Airport',
-      originAirportCode: airportCodes['Newark Liberty International Airport']!,
-      destinationAirportCode: airportCodes['Houston Intercontinental Airport']!,
-      availableSeats: 5,
-      standbyCount: 4,
-      stops: 'Nonstop',
-      connectionDuration: null,
-      connectionDetails: null,
-      wifi: true,
-      connectingPassengerIds: ['UF3', 'UF6'],
-    ),
-    // Flight UA434: Additional flight entry merged into the same key.
-    Flight(
-      originCity: 'Newark',
-      destinationCity: 'Houston',
-      flightNumber: 'UA434',
-      aircraft: 'Boeing 737-900',
-      prices: {
-        'United First': 1200,
-        'United Economy': 300,
-      },
-      seats: {
-        'United First': 20,
-        'United Economy': 117,
-      },
-      confirmedPassengers: {
-        'United First': [
-          'UF1',
-          'UF2',
-          'UF3',
-          'UF4',
-          'UF5',
-          'UF6',
-          'UF7',
-          'UF8',
-          'UF9',
-          'UF10'
-        ],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8',
-        ],
-      },
-      standbyPassengers: {
-        'United First': [
-          NonRevPassenger(id: 'NR1', name: 'Alice Barber', priority: 'PS0E'),
-          NonRevPassenger(id: 'NR2', name: 'Bob Diana', priority: 'SA1P'),
-        ],
-        'United Economy': [
-          NonRevPassenger(id: 'NR1', name: 'Charlie', priority: 'PS0E'),
-          NonRevPassenger(id: 'NR2', name: 'Diana', priority: 'SA1P'),
-        ],
-      },
-      checkedInPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3', 'UF4', 'UF5'],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8'
-        ],
-      },
-      departureTime: DateTime(2025, 3, 27, 8, 0),
-      arrivalTime: DateTime(2025, 3, 27, 11, 0),
-      origin: 'Newark Liberty International Airport',
-      destination: 'Houston Intercontinental Airport',
-      originAirportCode: airportCodes['Newark Liberty International Airport']!,
-      destinationAirportCode: airportCodes['Houston Intercontinental Airport']!,
-      availableSeats: 87,
-      standbyCount: 4,
-      stops: 'Nonstop',
-      connectionDuration: null,
-      connectionDetails: null,
-      wifi: true,
-      connectingPassengerIds: ['UF3', 'UF6'],
-    ),
-  ],
-  generateFlightKey('Washington Dulles International Airport',
-      'Frankfurt International', FlightType.international): [
-    // Flight UA201: Nonstop international flight with Wi-Fi, using Boeing 777-200 (77u).
-    Flight(
-      originCity: 'Washington',
-      destinationCity: 'Frankfurt',
-      flightNumber: 'UA201',
-      aircraft: 'Boeing 777-200 (77u)',
-      prices: {
-        'United Polaris': 4000,
-        'United Premium Plus': 2500,
-        'United Economy': 1500,
-      },
-      seats: {
-        'United Polaris': 20,
-        'United Premium Plus': 40,
-        'United Economy': 250,
-      },
-      confirmedPassengers: {
-        'United Polaris': [
-          'UP1',
-          'UP2',
-          'UP3',
-          'UP4',
-          'UP5',
-          'UP6',
-          'UP7',
-          'UP8',
-          'UP9',
-          'UP10'
-        ],
-        'United Premium Plus': [
-          'UPP1',
-          'UPP2',
-          'UPP3',
-          'UPP4',
-          'UPP5',
-          'UPP6',
-          'UPP7',
-          'UPP8',
-          'UPP9',
-          'UPP10',
-          'UPP11',
-          'UPP12',
-          'UPP13',
-          'UPP14',
-          'UPP15',
-          'UPP16',
-          'UPP17',
-          'UPP18',
-          'UPP19',
-          'UPP20'
-        ],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8',
-          'UE9',
-          'UE10',
-          'UE11',
-          'UE12',
-          'UE13',
-          'UE14',
-          'UE15',
-          'UE16',
-          'UE17',
-          'UE18',
-          'UE19',
-          'UE20',
-          'UE21',
-          'UE22',
-          'UE23',
-          'UE24',
-          'UE25',
-          'UE26',
-          'UE27',
-          'UE28',
-          'UE29',
-          'UE30',
-          'UE31',
-          'UE32',
-          'UE33',
-          'UE34',
-          'UE35',
-          'UE36',
-          'UE37',
-          'UE38',
-          'UE39',
-          'UE40',
-          'UE41',
-          'UE42',
-          'UE43',
-          'UE44',
-          'UE45',
-          'UE46',
-          'UE47',
-          'UE48',
-          'UE49',
-          'UE50'
-        ],
-      },
-      standbyPassengers: {
-        'United Polaris': [
-          NonRevPassenger(id: 'NR1', name: 'Grace', priority: 'PS0E'),
-        ],
-        'United Premium Plus': [
-          NonRevPassenger(id: 'NR1', name: 'Heidi', priority: 'PS0E'),
-        ],
-        'United Economy': [
-          NonRevPassenger(id: 'NR1', name: 'Ivan', priority: 'PS0E'),
-          NonRevPassenger(id: 'NR2', name: 'Judy', priority: 'SA1P'),
-        ],
-      },
-      checkedInPassengers: {
-        'United Polaris': ['UP1', 'UP2', 'UP3', 'UP4', 'UP5'],
-        'United Premium Plus': ['UPP1', 'UPP2', 'UPP3', 'UPP4', 'UPP5', 'UPP6'],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8',
-          'UE9',
-          'UE10'
-        ],
-      },
-      departureTime: DateTime(2025, 4, 16, 19, 30),
-      arrivalTime: DateTime(2025, 4, 17, 10, 30),
-      origin: 'Washington Dulles International Airport',
-      destination: 'Frankfurt International',
-      originAirportCode:
-          airportCodes['Washington Dulles International Airport']!,
-      destinationAirportCode: airportCodes['Frankfurt International']!,
-      availableSeats: 230,
-      standbyCount: 4,
-      stops: 'Nonstop',
-      connectionDuration: null,
-      connectionDetails: null,
-      wifi: true,
-    ),
-  ],
-  generateFlightKey('Chicago O\'Hare', 'Houston Intercontinental Airport',
-      FlightType.domestic): [
-    // Flight UA301.
-    Flight(
-      originCity: 'Chicago',
-      destinationCity: 'Houston',
-      flightNumber: 'UA301',
-      aircraft: 'Airbus A320',
-      prices: {
-        'United First': 1100,
-        'United Economy': 280,
-      },
-      seats: {
-        'United First': 16,
-        'United Economy': 140,
-      },
-      confirmedPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3', 'UF4'],
-        'United Economy': ['UE1', 'UE2', 'UE3', 'UE4', 'UE5'],
-      },
-      standbyPassengers: {
-        'United First': [],
-        'United Economy': [],
-      },
-      checkedInPassengers: {
-        'United First': ['UF1', 'UF2'],
-        'United Economy': ['UE1', 'UE2', 'UE3'],
-      },
-      departureTime: DateTime(2025, 4, 10, 7, 30),
-      arrivalTime: DateTime(2025, 4, 10, 9, 30),
-      origin: 'Chicago O\'Hare',
-      destination: 'Houston Intercontinental Airport',
-      originAirportCode: airportCodes['Chicago O\'Hare']!,
-      destinationAirportCode: airportCodes['Houston Intercontinental Airport']!,
-      availableSeats: 140,
-      standbyCount: 0,
-      stops: 'Nonstop',
-      connectionDuration: null,
-      connectionDetails: null,
-      wifi: true,
-    ),
-  ],
-  generateFlightKey('Denver International Airport',
-      'San Francisco International Airport', FlightType.domestic): [
-    // Flight UA302.
-    Flight(
-      originCity: 'Denver',
-      destinationCity: 'San Francisco',
-      flightNumber: 'UA302',
-      aircraft: 'Boeing 737 MAX',
-      prices: {
-        'United First': 1150,
-        'United Economy': 290,
-      },
-      seats: {
-        'United First': 18,
-        'United Economy': 130,
-      },
-      confirmedPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3'],
-        'United Economy': ['UE1', 'UE2', 'UE3', 'UE4', 'UE5', 'UE6'],
-      },
-      standbyPassengers: {
-        'United First': [],
-        'United Economy': [],
-      },
-      checkedInPassengers: {
-        'United First': ['UF1', 'UF2'],
-        'United Economy': ['UE1', 'UE2', 'UE3'],
-      },
-      departureTime: DateTime(2025, 4, 11, 8, 15),
-      arrivalTime: DateTime(2025, 4, 11, 10, 15),
-      origin: 'Denver International Airport',
-      destination: 'San Francisco International Airport',
-      originAirportCode: airportCodes['Denver International Airport']!,
-      destinationAirportCode:
-          airportCodes['San Francisco International Airport']!,
-      availableSeats: 112,
-      standbyCount: 0,
-      stops: 'Nonstop',
-      connectionDuration: null,
-      connectionDetails: null,
-      wifi: true,
-    ),
-  ],
-  generateFlightKey('LAX International', 'Newark Liberty International Airport',
-      FlightType.domestic): [
-    // Flight UA303.
-    Flight(
-      originCity: 'Los Angeles',
-      destinationCity: 'Newark',
-      flightNumber: 'UA303',
-      aircraft: 'Boeing 777-300ER',
-      prices: {
-        'United First': 1400,
-        'United Economy': 330,
-      },
-      seats: {
-        'United First': 22,
-        'United Economy': 160,
-      },
-      confirmedPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3'],
-        'United Economy': ['UE1', 'UE2', 'UE3', 'UE4', 'UE5', 'UE6', 'UE7'],
-      },
-      standbyPassengers: {
-        'United First': [],
-        'United Economy': [],
-      },
-      checkedInPassengers: {
-        'United First': ['UF1', 'UF2'],
-        'United Economy': ['UE1', 'UE2', 'UE3'],
-      },
-      departureTime: DateTime(2025, 4, 12, 12, 0),
-      arrivalTime: DateTime(2025, 4, 12, 20, 0),
-      origin: 'LAX International',
-      destination: 'Newark Liberty International Airport',
-      originAirportCode: airportCodes['LAX International']!,
-      destinationAirportCode:
-          airportCodes['Newark Liberty International Airport']!,
-      availableSeats: 138,
-      standbyCount: 0,
-      stops: 'Nonstop',
-      connectionDuration: null,
-      connectionDetails: null,
-      wifi: true,
-    ),
-  ],
-  generateFlightKey('Houston Intercontinental Airport',
-      'Washington Dulles International Airport', FlightType.domestic): [
-    // Flight UA304.
-    Flight(
-      originCity: 'Houston',
-      destinationCity: 'Washington',
-      flightNumber: 'UA304',
-      aircraft: 'Airbus A321',
-      prices: {
-        'United First': 1250,
-        'United Economy': 310,
-      },
-      seats: {
-        'United First': 18,
-        'United Economy': 145,
-      },
-      confirmedPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3', 'UF4'],
-        'United Economy': ['UE1', 'UE2', 'UE3', 'UE4', 'UE5', 'UE6'],
-      },
-      standbyPassengers: {
-        'United First': [],
-        'United Economy': [],
-      },
-      checkedInPassengers: {
-        'United First': ['UF1', 'UF2'],
-        'United Economy': ['UE1', 'UE2', 'UE3'],
-      },
-      departureTime: DateTime(2025, 4, 13, 10, 0),
-      arrivalTime: DateTime(2025, 4, 13, 14, 0),
-      origin: 'Houston Intercontinental Airport',
-      destination: 'Washington Dulles International Airport',
-      originAirportCode: airportCodes['Houston Intercontinental Airport']!,
-      destinationAirportCode:
-          airportCodes['Washington Dulles International Airport']!,
-      availableSeats: 135,
-      standbyCount: 0,
-      stops: 'Nonstop',
-      connectionDuration: null,
-      connectionDetails: null,
-      wifi: true,
-    ),
-  ],
-  generateFlightKey('San Francisco International Airport', 'Chicago O\'Hare',
-      FlightType.domestic): [
-    // Flight UA305.
-    Flight(
-      originCity: 'San Francisco',
-      destinationCity: 'Chicago',
-      flightNumber: 'UA305',
-      aircraft: 'Boeing 787 Dreamliner',
-      prices: {
-        'United First': 1500,
-        'United Economy': 350,
-      },
-      seats: {
-        'United First': 20,
-        'United Economy': 170,
-      },
-      confirmedPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3', 'UF4', 'UF5'],
-        'United Economy': [
-          'UE1',
-          'UE2',
-          'UE3',
-          'UE4',
-          'UE5',
-          'UE6',
-          'UE7',
-          'UE8'
-        ],
-      },
-      standbyPassengers: {
-        'United First': [],
-        'United Economy': [],
-      },
-      checkedInPassengers: {
-        'United First': ['UF1', 'UF2', 'UF3'],
-        'United Economy': ['UE1', 'UE2', 'UE3', 'UE4'],
-      },
-      departureTime: DateTime(2025, 4, 14, 14, 30),
-      arrivalTime: DateTime(2025, 4, 14, 18, 30),
-      origin: 'San Francisco International Airport',
-      destination: 'Chicago O\'Hare',
-      originAirportCode: airportCodes['San Francisco International Airport']!,
-      destinationAirportCode: airportCodes['Chicago O\'Hare']!,
-      availableSeats: 162,
-      standbyCount: 0,
-      stops: 'Nonstop',
-      connectionDuration: null,
-      connectionDetails: null,
-      wifi: true,
-    ),
-  ],
-};
+  );
+}
+
+int _dailyFrequency(_RouteTemplate route, double miles) {
+  if (route.flightType == FlightType.international) {
+    final touchesUnitedHub =
+        route.origin.isUnitedHub || route.destination.isUnitedHub;
+    if (miles > 5000) return touchesUnitedHub ? 2 : 1;
+    return touchesUnitedHub ? 2 : 1;
+  }
+
+  if (route.origin.isUnitedHub && route.destination.isUnitedHub) {
+    return miles > 2500 ? 3 : 4;
+  }
+  if (route.origin.isUnitedHub || route.destination.isUnitedHub) {
+    return 3;
+  }
+  return 2;
+}
+
+int _departureMinuteFor(
+  _RouteTemplate route,
+  int sequence,
+  int dailyFrequency,
+) {
+  final routeOffset =
+      _stableHash('${route.origin.code}-${route.destination.code}') % 38;
+  final domesticBank = [375, 515, 705, 930, 1165];
+  final usToEuropeBank = [1035, 1170, 1280];
+  final europeToUsBank = [560, 710, 850];
+  final europeBank = [480, 780, 1080];
+  final pacificBank = [515, 780, 1030];
+
+  List<int> bank;
+  if (route.flightType == FlightType.domestic) {
+    bank = domesticBank;
+  } else if (route.origin.country == 'United States' &&
+      route.destination.country != 'United States') {
+    bank = route.origin.code == 'GUM' ? pacificBank : usToEuropeBank;
+  } else if (route.origin.country != 'United States' &&
+      route.destination.country == 'United States') {
+    bank = europeToUsBank;
+  } else {
+    bank = europeBank;
+  }
+
+  final base = bank[sequence % bank.length];
+  final spacing = sequence >= bank.length ? 95 * (sequence ~/ bank.length) : 0;
+  return (base + spacing + routeOffset) % (24 * 60);
+}
+
+String _aircraftFor(
+  FlightType flightType,
+  double miles,
+  int sequence,
+  int seed,
+) {
+  if (flightType == FlightType.international) {
+    return 'Boeing 777-200 (77u)';
+  }
+
+  final narrowBodies = [
+    'Boeing 737-900',
+    'Boeing 737 MAX 9',
+    'Airbus A320',
+    'Airbus A321',
+  ];
+  if (miles > 2300) {
+    return sequence.isEven ? 'Boeing 737 MAX 9' : 'Airbus A321';
+  }
+  return narrowBodies[(seed + sequence) % narrowBodies.length];
+}
+
+Map<String, int> _seatLayoutFor(String aircraft) {
+  if (aircraft.contains('777-200')) {
+    return {
+      'United Polaris': 50,
+      'United Premium Plus': 24,
+      'United Economy': 202,
+    };
+  }
+  if (aircraft.contains('737-900')) {
+    return {'United First': 20, 'United Economy': 159};
+  }
+  if (aircraft.contains('A320')) {
+    return {
+      'United First': 12,
+      'United Economy Plus': 42,
+      'United Economy': 96,
+    };
+  }
+  if (aircraft.contains('A321')) {
+    return {
+      'United First': 20,
+      'United Economy Plus': 57,
+      'United Economy': 123,
+    };
+  }
+  return {'United First': 20, 'United Economy Plus': 48, 'United Economy': 111};
+}
+
+Map<String, List<String>> _confirmedPassengers(
+  Map<String, int> seats,
+  double loadFactor,
+  math.Random random,
+) {
+  final passengers = <String, List<String>>{};
+  for (final entry in seats.entries) {
+    final cabin = entry.key;
+    final capacity = entry.value;
+    final cabinAdjustment = cabin.contains('Polaris') || cabin.contains('First')
+        ? -0.08
+        : cabin.contains('Premium') || cabin.contains('Plus')
+        ? -0.03
+        : 0.02;
+    final cabinLoad = _clampDouble(
+      loadFactor + cabinAdjustment + (random.nextDouble() * 0.12 - 0.04),
+      0.35,
+      0.99,
+    );
+    final booked = math.min(capacity, (capacity * cabinLoad).round());
+    passengers[cabin] = _passengerIds(_prefixForCabin(cabin), booked);
+  }
+  return passengers;
+}
+
+Map<String, List<String>> _checkedInPassengers(
+  Map<String, List<String>> confirmedPassengers,
+  DateTime departureTime,
+  math.Random random,
+) {
+  final now = DateTime.now();
+  final hoursUntilDeparture = departureTime.difference(now).inHours;
+  final checkInRate = hoursUntilDeparture <= 0
+      ? 0.94
+      : hoursUntilDeparture <= 24
+      ? 0.62 + random.nextDouble() * 0.28
+      : 0.01 + random.nextDouble() * 0.05;
+
+  return confirmedPassengers.map((cabin, passengers) {
+    final checkedIn = math.min(
+      passengers.length,
+      (passengers.length * checkInRate).round(),
+    );
+    return MapEntry(cabin, passengers.take(checkedIn).toList());
+  });
+}
+
+Map<String, List<NonRevPassenger>> _standbyPassengers(
+  List<String> cabins,
+  double loadFactor,
+  math.Random random,
+) {
+  final standbyPassengers = <String, List<NonRevPassenger>>{};
+  for (final cabin in cabins) {
+    final pressure = loadFactor > 0.92
+        ? 4
+        : loadFactor > 0.82
+        ? 2
+        : 1;
+    final count = math.max(0, pressure + random.nextInt(3) - 1);
+    standbyPassengers[cabin] = List.generate(count, (index) {
+      final name =
+          _nonRevNames[(random.nextInt(_nonRevNames.length) + index) %
+              _nonRevNames.length];
+      final priority =
+          _priorities[(random.nextInt(_priorities.length) + index) %
+              _priorities.length];
+      return NonRevPassenger(
+        id: 'NR${index + 1}',
+        name: name,
+        priority: priority,
+      );
+    });
+  }
+  return standbyPassengers;
+}
+
+Map<String, int> _pricesFor(
+  FlightType flightType,
+  double miles,
+  Iterable<String> cabins,
+  double loadFactor,
+) {
+  final demandMultiplier = 0.85 + loadFactor;
+  final economyBase = flightType == FlightType.domestic
+      ? 90 + miles * 0.15
+      : 520 + miles * 0.18;
+
+  return {
+    for (final cabin in cabins)
+      cabin: _roundedFare(
+        economyBase * _fareMultiplierFor(cabin) * demandMultiplier,
+      ),
+  };
+}
+
+double _fareMultiplierFor(String cabin) {
+  if (cabin.contains('Polaris')) return 4.4;
+  if (cabin.contains('First')) return 3.2;
+  if (cabin.contains('Premium')) return 1.75;
+  if (cabin.contains('Plus')) return 1.28;
+  return 1.0;
+}
+
+int _roundedFare(double amount) => ((amount / 10).round() * 10).clamp(90, 9000);
+
+double _loadFactor(
+  DateTime date,
+  FlightType flightType,
+  int seed,
+  int sequence,
+) {
+  final random = math.Random(seed + sequence * 997);
+  var load = flightType == FlightType.domestic ? 0.72 : 0.78;
+
+  if (date.weekday == DateTime.friday || date.weekday == DateTime.sunday) {
+    load += 0.08;
+  } else if (date.weekday == DateTime.tuesday ||
+      date.weekday == DateTime.wednesday) {
+    load -= 0.05;
+  }
+
+  final holidayTravel =
+      (date.month == 11 && date.day >= 20) ||
+      (date.month == 12 && date.day >= 15);
+  if (holidayTravel) load += 0.12;
+
+  if (date.month == 7 || date.month == 8) load += 0.05;
+  if (sequence == 0) load += 0.02;
+  load += random.nextDouble() * 0.18 - 0.08;
+
+  return _clampDouble(load, 0.45, 0.99);
+}
+
+List<String> _passengerIds(String prefix, int count) {
+  return List.generate(count, (index) => '$prefix${index + 1}');
+}
+
+String _prefixForCabin(String cabin) {
+  if (cabin.contains('Polaris')) return 'UP';
+  if (cabin.contains('Premium Plus')) return 'UPP';
+  if (cabin.contains('First')) return 'UF';
+  if (cabin.contains('Economy Plus')) return 'UEP';
+  return 'UE';
+}
+
+List<String> _connectingPassengerIds(
+  Map<String, List<String>> confirmedPassengers,
+  math.Random random,
+) {
+  final allPassengers = confirmedPassengers.values
+      .expand((ids) => ids)
+      .toList();
+  if (allPassengers.isEmpty) return const [];
+  final count = math.min(6, math.max(1, allPassengers.length ~/ 25));
+  allPassengers.shuffle(random);
+  return allPassengers.take(count).toList();
+}
+
+_AirportProfile? _connectionAirport(_RouteTemplate route) {
+  final candidates = _airportProfiles.where((airport) {
+    if (!airport.isUnitedHub) return false;
+    return airport.code != route.origin.code &&
+        airport.code != route.destination.code;
+  }).toList();
+  if (candidates.isEmpty) return null;
+  final index =
+      _stableHash('${route.origin.code}-${route.destination.code}') %
+      candidates.length;
+  return candidates[index];
+}
+
+String _flightNumberFor(int routeIndex, int sequence) {
+  final number = 100 + ((routeIndex * 7 + sequence * 17) % 8900);
+  return 'UA${number.toString().padLeft(3, '0')}';
+}
+
+int _blockMinutes(FlightType flightType, double miles) {
+  final cruiseSpeed = flightType == FlightType.domestic ? 485 : 515;
+  final taxiPadding = flightType == FlightType.domestic ? 42 : 62;
+  final minutes = (miles / cruiseSpeed * 60 + taxiPadding).round();
+  return math.max(flightType == FlightType.domestic ? 70 : 95, minutes);
+}
+
+double _distanceMiles(_AirportProfile a, _AirportProfile b) {
+  const earthRadiusMiles = 3958.8;
+  final lat1 = _degreesToRadians(a.latitude);
+  final lat2 = _degreesToRadians(b.latitude);
+  final deltaLat = _degreesToRadians(b.latitude - a.latitude);
+  final deltaLon = _degreesToRadians(b.longitude - a.longitude);
+  final haversine =
+      math.sin(deltaLat / 2) * math.sin(deltaLat / 2) +
+      math.cos(lat1) *
+          math.cos(lat2) *
+          math.sin(deltaLon / 2) *
+          math.sin(deltaLon / 2);
+  return earthRadiusMiles *
+      2 *
+      math.atan2(math.sqrt(haversine), math.sqrt(1 - haversine));
+}
+
+double _degreesToRadians(double degrees) => degrees * math.pi / 180;
+
+double _clampDouble(double value, double min, double max) {
+  return math.max(min, math.min(max, value));
+}
+
+DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);
+
+int _stableHash(String value) {
+  var hash = 0x811c9dc5;
+  for (final codeUnit in value.codeUnits) {
+    hash ^= codeUnit;
+    hash = (hash * 0x01000193) & 0x7fffffff;
+  }
+  return hash;
+}
+
+const List<String> _nonRevNames = [
+  'Alice Barber',
+  'Bob Diana',
+  'Charlie Reed',
+  'Diana Patel',
+  'Eve Martinez',
+  'Frank Stone',
+  'Grace Kim',
+  'Heidi Moore',
+  'Ivan Brooks',
+  'Judy Chen',
+  'Lena Ortiz',
+  'Marcus Hill',
+];
+
+const List<String> _priorities = ['PS0E', 'SA1P', 'SA2P', 'SA3P'];
 
 /// A repository that abstracts fetching flight data.
 ///
